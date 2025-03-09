@@ -16,15 +16,8 @@ This project is an admin dashboard for managing films. It allows users to add, e
 - Bootstrap (for styling)
 
 ## Installation
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   ```
-2. Navigate to the project directory:
-   ```bash
-   cd mini_projet
-   ```
-3. Open `index.html` in your web browser to view the project.
+
+1. Open `index.html` in your web browser to view the project.
 
 ## Usage
 - Navigate through the sidebar to access different sections of the dashboard.
