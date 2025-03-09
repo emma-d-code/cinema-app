@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservations - Admin</title>
+    <link rel="stylesheet" href="admin_dashboard.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .films-content {
+            display: flex;
+            gap: 20px;
+        }
+
+        .films-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 1rem;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .films-table thead {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .films-table th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .films-table td {
+            padding: 12px 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .films-table tr:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .film-poster {
+            max-width: 80px;
+            max-height: 120px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        #notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+
+        /* Global Modal Styles with Black Background and Red Border */
+        .modal-content {
+            background-color: black !important;
+            border: 2px solid red !important;
+            color: white !important;
+        }
+
+        .modal {
+            --bs-modal-bg: black !important;
+            --bs-modal-color: white !important;
+        }
+
+        .modal-header {
+            background-color: black !important;
+            border-bottom: 1px solid red !important;
+            color: white !important;
+        }
+
+        .modal-header .modal-title {
+            color: white !important;
+        }
+
+        .modal-body {
+            background-color: black !important;
+            color: white !important;
+        }
+
+        .modal-footer {
+            background-color: black !important;
+            border-top: 1px solid red !important;
+            color: white !important;
+        }
+
+        /* Form elements inside modals */
+        .modal .form-control,
+        .modal .form-select {
+            background-color: #1a1a1a !important;
+            color: rgb(250, 31, 31) !important;
+            border: 1px solid red !important;
+        }
+
+        .modal .form-label {
+            color: white !important;
+        }
+
+        /* Modal buttons */
+        .modal .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        .modal .btn-secondary {
+            background-color: #333 !important;
+            color: white !important;
+        }
+
+        .modal .btn-primary,
+        .modal .btn-danger {
+            background-color: red !important;
+            border-color: red !important;
+            color: white !important;
+        }
+
+        /* Action Buttons Styles */
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .table-actions .btn {
+            margin-right: 0;
+            padding: 4px 8px;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .table-actions .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .table-actions .btn-warning {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .table-actions .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons .btn {
+            margin-right: 0;
+            padding: 4px 8px;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-buttons .btn-info {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            color: white;
+        }
+
+        .action-buttons .btn-warning {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .action-buttons .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .salles-table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            margin-bottom: 1rem;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            color: black;
+        }
+
+        .salles-table thead {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .salles-table th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: black;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .salles-table td {
+            padding: 12px 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #dee2e6;
+            transition: background-color 0.3s ease;
+            color: black;
+        }
+
+        .add-reservation-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #db1313;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-weight: 500;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-reservation-btn i {
+            font-size: 1.2em;
+        }
+
+        .add-reservation-btn:hover {
+            background-color: #2b2188;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons .btn {
+            margin-right: 0;
+            padding: 4px 8px;
+            font-size: 0.8em;
+        }
+
+        .action-buttons .btn-info {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            color: white;
+        }
+
+        .action-buttons .btn-warning {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .action-buttons .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-left h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .filters-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .filters-section .form-control,
+        .filters-section .form-select {
+            width: 100%;
+        }
+
+        .filters-section .row > div {
+            margin-bottom: 10px;
+        }
+
+        /* Removed sidebar toggle styles */
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-content">
+                <div class="sidebar-logo">
+                    <img src="logo.webp" alt="Logo" width="45" height="45">
+                </div>
+                <nav>
+                    <ul>
+                        <li>
+                            <a href="admin_dashboard.html">
+                                <i class="bi bi-speedometer2"></i>
+                                <span>Tableau de Bord</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="films.html">
+                                <i class="bi bi-film"></i>
+                                Films
+                            </a>
+                        </li>
+                        <li>
+                            <a href="reservations.html">
+                                <i class="bi bi-calendar-check"></i>
+                                Réservations
+                            </a>
+                        </li>
+                        <li>
+                            <a href="seances.html">
+                                <i class="bi bi-clock"></i>
+                                <span>Seances</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="clients.html">
+                                <i class="bi bi-people"></i>
+                                <span>Clients</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="salles.html">
+                                <i class="bi bi-buildings"></i>
+                                <span>Salles</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="profils.html">
+                                <i class="bi bi-person"></i>
+                                <span>Profile</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="sidebar-footer">
+                        <button onclick="logout()" class="logout-btn">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Déconnexion</span>
+                        </button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header>
+                <div class="header-left">
+                    <h1>Réservations</h1>
+                </div>
+                <div class="header-right">
+                    <button class="add-reservation-btn" onclick="createMyReservation()">
+                        <i class="bi bi-plus-circle"></i> Ajouter Réservation
+                    </button>
+                </div>
+            </header>
+
+            <!-- Section des Filtres -->
+            <div class="filters-section">
+                <div class="row">
+                    <div class="col-md-3">
+                        <input type="text" id="search-reservation" class="form-control" placeholder="Rechercher...">
+                    </div>
+                    <div class="col-md-3">
+                        <select id="filter-film" class="form-select">
+                            <option value="all">Tous les Films</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="filter-client" class="form-select">
+                            <option value="all">Tous les Clients</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="filter-statut" class="form-select">
+                            <option value="all">Tous les Statuts</option>
+                            <option value="confirmee">Confirmée</option>
+                            <option value="en_attente">En Attente</option>
+                            <option value="annulee">Annulée</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tableau des réservations -->
+            <div class="table-responsive">
+                <table class="table salles-table">
+                    <thead>
+                        <tr>
+                            <th>Séance</th>
+                            <th>Client</th>
+                            <th>Film</th>
+                            <th>Séance (Date, Heure, Version)</th>
+                            <th>Date Réservation</th>
+                            <th>Nombre de Places</th>
+                            <th>Sièges</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reservationsTableBody">
+                        <!-- Les réservations seront ajoutées dynamiquement ici -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajout/Modification de Réservation -->
+    <div class="modal fade" id="reservationModal" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reservationModalLabel">Ajouter/Modifier une Réservation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="reservation-form">
+                        <!-- Formulaire de réservation -->
+                        <div class="mb-3">
+                            <label for="reservation-client" class="form-label">Client</label>
+                            <select class="form-select" id="reservation-client" required>
+                                <option value="">Sélectionner un client</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reservation-film" class="form-label">Film</label>
+                            <select class="form-select" id="reservation-film" required>
+                                <option value="">Sélectionner un film</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reservation-seance" class="form-label">Séance</label>
+                            <select class="form-select" id="reservation-seance" required>
+                                <option value="">Sélectionner une séance</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reservation-places" class="form-label">Nombre de Places</label>
+                            <input type="number" class="form-control" id="reservation-places" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reservation-statut" class="form-label">Statut</label>
+                            <select class="form-select" id="reservation-statut" required>
+                                <option value="">Sélectionner un statut</option>
+                                <option value="confirmee">Confirmée</option>
+                                <option value="en_attente">En Attente</option>
+                                <option value="annulee">Annulée</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="save-reservation-btn">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Détails de la Réservation -->
+    <div class="modal fade" id="reservationDetailsModal" tabindex="-1" aria-labelledby="reservationDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="reservationDetailsModalLabel">Détails de la Réservation</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Détails de la réservation -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmation de Suppression -->
+    <div class="modal fade" id="deleteReservationModal" tabindex="-1" aria-labelledby="deleteReservationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteReservationModalLabel">Confirmer la Suppression</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir supprimer cette réservation ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-danger" id="confirm-delete-reservation-btn">Supprimer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Clients
+        const clients = [
+            { 
+                id: 16, 
+                nom: 'Bennis', 
+                prenom: 'Karim', 
+                email: 'karim.bennis@gmail.com', 
+                telephone: '06 69 19 50 41', 
+                statut: 'ACTIF' 
+            },
+            { 
+                id: 17, 
+                nom: 'Cherkaoui', 
+                prenom: 'Noura', 
+                email: 'noura.cherkaoui@yahoo.com', 
+                telephone: '06 98 10 83 60', 
+                statut: 'INACTIF' 
+            },
+            { 
+                id: 18, 
+                nom: 'El Amrani', 
+                prenom: 'Zineb', 
+                email: 'zineb.el amrani@hotmail.com', 
+                telephone: '06 58 98 04 71', 
+                statut: 'INACTIF' 
+            },
+            { 
+                id: 19, 
+                nom: 'El Fassi', 
+                prenom: 'Amina', 
+                email: 'amina.el fassi@hotmail.com', 
+                telephone: '06 05 54 14 06', 
+                statut: 'INACTIF' 
+            },
+            { 
+                id: 20, 
+                nom: 'Rhouzlane', 
+                prenom: 'Youssef', 
+                email: 'youssef.rhouzlane@yahoo.com', 
+                telephone: '06 42 58 53 37', 
+                statut: 'ACTIF' 
+            },
+            { 
+                id: 1, 
+                nom: 'Mekkaoui', 
+                prenom: 'Imane', 
+                email: 'imane.mekkaoui@example.com',
+                telephone: '',
+                statut: 'ACTIF'
+            },
+            { 
+                id: 21, 
+                nom: 'Assistant', 
+                prenom: 'Cascade', 
+                email: 'cascade.assistant@codeium.com', 
+                telephone: '06 AI 00 00 00', 
+                statut: 'ACTIF' 
+            }
+        ];
+
+        // Seances
+        const seances = [
+            { 
+                id: 1, 
+                film_titre: 'Wolf Man', 
+                salle: 'A1 (STANDARD)', 
+                date: '2025-01-19', 
+                heure: '11:00', 
+                version: 'VOST' 
+            },
+            { 
+                id: 2, 
+                film_titre: 'Wolf Man', 
+                salle: 'A1 (STANDARD)', 
+                date: '2025-01-20', 
+                heure: '11:00', 
+                version: 'VF' 
+            },
+            { 
+                id: 3, 
+                film_titre: 'Wolf Man', 
+                salle: 'A1 (STANDARD)', 
+                date: '2025-01-21', 
+                heure: '14:00', 
+                version: 'VO' 
+            },
+            { 
+                id: 4, 
+                film_titre: 'Wolf Man', 
+                salle: 'C1 (IMAX)', 
+                date: '2025-01-22', 
+                heure: '17:00', 
+                version: 'VF' 
+            }
+        ];
+
+        // Films (updated to match seances)
+        const films = [
+            { 
+                id: 1, 
+                titre: 'Wolf Man', 
+                annee: 2025, 
+                versions: ['VOST', 'VF', 'VO'],
+                salles: ['A1 (STANDARD)', 'C1 (IMAX)']
+            }
+        ];
+
+        // Existing reservation
+        const reservations = [
+            {
+                id: 1,
+                client_id: 1,
+                film_id: 1,
+                seance_id: 1,
+                date_reservation: '2025-01-19', // Updated to match seance date
+                nombre_places: 2,
+                statut: 'Confirmé',
+                sieges: ['A1', 'A2'] // Sièges réservés
+            },
+            {
+                id: 2,
+                client_id: 16, // Karim Bennis
+                film_id: 1,
+                seance_id: 2, // Wolf Man, 2025-01-20, 11:00, VF
+                date_reservation: '2025-01-20', // Updated to match seance date
+                nombre_places: 3,
+                statut: 'Confirmé',
+                sieges: ['B1', 'B2', 'B3']
+            },
+            {
+                id: 3,
+                client_id: 17, // Noura Cherkaoui
+                film_id: 1,
+                seance_id: 3, // Wolf Man, 2025-01-21, 14:00, VO
+                date_reservation: '2025-01-21', // Updated to match seance date
+                nombre_places: 2,
+                statut: 'En Attente',
+                sieges: ['C1', 'C2']
+            },
+            {
+                id: 4,
+                client_id: 19, // Amina El Fassi
+                film_id: 1,
+                seance_id: 4, // Wolf Man, 2025-01-22, 17:00, VF, C1 IMAX
+                date_reservation: '2025-01-22', // Updated to match seance date
+                nombre_places: 4,
+                statut: 'Confirmé',
+                sieges: ['D1', 'D2', 'D3', 'D4']
+            },
+            {
+                id: 5,
+                client_id: 20, // Youssef Rhouzlane
+                film_id: 1,
+                seance_id: 1, // Wolf Man, 2025-01-19, 11:00, VOST
+                date_reservation: '2025-01-19', // Updated to match seance date
+                nombre_places: 1,
+                statut: 'Confirmé',
+                sieges: ['E1']
+            }
+        ];
+
+        // Fonctions utilitaires
+        function getClientDetails(clientId) {
+            return clients.find(client => client.id === clientId) || { 
+                nom: 'Client Inconnu', 
+                prenom: '', 
+                email: 'N/A' 
+            };
+        }
+
+        function getFilmDetails(filmId) {
+            return films.find(film => film.id === filmId) || { 
+                titre: 'Film Inconnu', 
+                annee: 'N/A',
+                versions: [],
+                salles: []
+            };
+        }
+
+        function getSeanceDetails(seanceId) {
+            return seances.find(seance => seance.id === seanceId) || { 
+                film_titre: 'Séance Inconnue', 
+                date: 'N/A', 
+                heure: 'N/A',
+                salle: 'N/A',
+                version: 'N/A'
+            };
+        }
+
+        // CRUD Operations for Reservations
+        function createReservation(reservation) {
+            // Validate reservation data
+            if (!reservation.client_id || !reservation.film_id || !reservation.seance_id) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Veuillez remplir tous les champs obligatoires.'
+                });
+                return false;
+            }
+
+            // Find the seance to get its date
+            const seance = seances.find(s => s.id === reservation.seance_id);
+            
+            if (!seance) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Séance non trouvée.'
+                });
+                return false;
+            }
+
+            // Get current date
+            const currentDate = new Date().toISOString().split('T')[0];
+            const seanceDate = seance.date;
+
+            // Validate reservation date
+            if (currentDate > seanceDate) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'La date de réservation ne peut pas être antérieure à la date de la séance.'
+                });
+                return false;
+            }
+
+            // Set reservation date to match the seance date
+            reservation.date_reservation = seanceDate;
+
+            // Generate a new unique ID
+            reservation.id = reservations.length > 0 
+                ? Math.max(...reservations.map(r => r.id)) + 1 
+                : 1;
+            
+            // Set default status if not provided
+            reservation.statut = reservation.statut || 'En Attente';
+
+            // Add the new reservation
+            reservations.push(reservation);
+            
+            // Refresh the table
+            populateReservationsTable();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Réservation Créée',
+                text: `La réservation #${reservation.id} a été ajoutée avec succès.`
+            });
+
+            return true;
+        }
+
+        function updateReservation(reservationId, updatedData) {
+            const index = reservations.findIndex(r => r.id === reservationId);
+            
+            if (index === -1) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Réservation non trouvée.'
+                });
+                return false;
+            }
+
+            // If seance_id is being updated, update the reservation date
+            if (updatedData.seance_id) {
+                const seance = seances.find(s => s.id === updatedData.seance_id);
+                
+                if (!seance) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur',
+                        text: 'Séance non trouvée.'
+                    });
+                    return false;
+                }
+
+                // Get current date
+                const currentDate = new Date().toISOString().split('T')[0];
+                const seanceDate = seance.date;
+
+                // Validate reservation date
+                if (currentDate > seanceDate) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur',
+                        text: 'La date de réservation ne peut pas être antérieure à la date de la séance.'
+                    });
+                    return false;
+                }
+
+                updatedData.date_reservation = seanceDate;
+            }
+
+            // Merge existing reservation with updated data
+            reservations[index] = { ...reservations[index], ...updatedData };
+            
+            // Refresh the table
+            populateReservationsTable();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Réservation Mise à Jour',
+                text: `La réservation #${reservationId} a été mise à jour.`
+            });
+
+            return true;
+        }
+
+        function deleteReservation(reservationId) {
+            Swal.fire({
+                title: 'Confirmer la Suppression',
+                text: 'Voulez-vous vraiment supprimer cette réservation ?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Oui, supprimer',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const index = reservations.findIndex(r => r.id === reservationId);
+                    
+                    if (index === -1) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erreur',
+                            text: 'Réservation non trouvée.'
+                        });
+                        return false;
+                    }
+
+                    // Remove the reservation
+                    reservations.splice(index, 1);
+                    
+                    // Refresh the table
+                    populateReservationsTable();
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Réservation Supprimée',
+                        text: `La réservation #${reservationId} a été supprimée.`
+                    });
+
+                    return true;
+                }
+            });
+        }
+
+        // Fonction de recherche globale
+        function searchReservations() {
+            const searchTerm = document.getElementById('search-reservation').value.toLowerCase();
+            const filmFilter = document.getElementById('filter-film').value;
+            const clientFilter = document.getElementById('filter-client').value;
+            const statutFilter = document.getElementById('filter-statut').value;
+
+            const filteredReservations = reservations.filter(reservation => {
+                // Recherche textuelle
+                const client = getClientDetails(reservation.client_id);
+                const film = getFilmDetails(reservation.film_id);
+                const seance = getSeanceDetails(reservation.seance_id);
+
+                const matchSearch = !searchTerm || 
+                    client.nom.toLowerCase().includes(searchTerm) ||
+                    film.titre.toLowerCase().includes(searchTerm) ||
+                    reservation.id.toString().includes(searchTerm);
+
+                // Filtres
+                const matchFilm = !filmFilter || filmFilter === 'all' || reservation.film_id === parseInt(filmFilter);
+                const matchClient = !clientFilter || clientFilter === 'all' || reservation.client_id === parseInt(clientFilter);
+                const matchStatut = !statutFilter || statutFilter === 'all' || reservation.statut === statutFilter;
+
+                return matchSearch && matchFilm && matchClient && matchStatut;
+            });
+
+            // Mettre à jour le tableau avec les réservations filtrées
+            populateReservationsTable(filteredReservations);
+        }
+
+        // Ajouter des écouteurs d'événements pour les filtres
+        document.addEventListener('DOMContentLoaded', () => {
+            // Peupler les filtres
+            populateFilmFilter();
+            populateClientFilter();
+
+            // Ajouter des écouteurs pour les filtres
+            document.getElementById('search-reservation').addEventListener('input', searchReservations);
+            document.getElementById('filter-film').addEventListener('change', searchReservations);
+            document.getElementById('filter-client').addEventListener('change', searchReservations);
+            document.getElementById('filter-statut').addEventListener('change', searchReservations);
+        });
+
+        function populateFilmFilter() {
+            const filmFilter = document.getElementById('filter-film');
+            filmFilter.innerHTML = '<option value="all">Tous les films</option>';
+            
+            films.forEach(film => {
+                const option = document.createElement('option');
+                option.value = film.id;
+                option.textContent = film.titre;
+                filmFilter.appendChild(option);
+            });
+        }
+
+        function populateClientFilter() {
+            const clientFilter = document.getElementById('filter-client');
+            clientFilter.innerHTML = '<option value="all">Tous les clients</option>';
+            
+            clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.id;
+                option.textContent = `${client.nom} ${client.prenom}`;
+                clientFilter.appendChild(option);
+            });
+        }
+
+        // Modification de la fonction pour afficher dynamiquement les actions
+        function populateReservationsTable(reservationsToShow = reservations) {
+            const tableBody = document.getElementById('reservationsTableBody');
+            tableBody.innerHTML = ''; // Vider le tableau
+
+            reservationsToShow.forEach(reservation => {
+                // Get related details
+                const client = getClientDetails(reservation.client_id);
+                const seance = getSeanceDetails(reservation.seance_id);
+                const film = getFilmDetails(reservation.film_id);
+
+                // Create table row
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${seance.film_titre}</td>
+                    <td>${client.nom} ${client.prenom}</td>
+                    <td>${film.titre}</td>
+                    <td>${seance.date} ${seance.heure} (${seance.version})</td>
+                    <td>${reservation.date_reservation}</td>
+                    <td>${reservation.nombre_places}</td>
+                    <td>${reservation.sieges.join(', ')}</td>
+                    <td>${getStatutLabel(reservation.statut)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-info btn-sm" onclick="showReservationDetails(${reservation.id})">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-warning btn-sm" onclick="editReservationModal(${reservation.id})">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteReservation(${reservation.id})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Fonction pour obtenir le libellé du statut
+        function getStatutLabel(statut) {
+            switch(statut) {
+                case 'confirmee': return 'Confirmée';
+                case 'en_attente': return 'En Attente';
+                case 'annulee': return 'Annulée';
+                default: return statut;
+            }
+        }
+
+        function showReservationDetails(reservationId) {
+            const reservation = reservations.find(r => r.id === reservationId);
+            const client = getClientDetails(reservation.client_id);
+            const film = getFilmDetails(reservation.film_id);
+            const seance = getSeanceDetails(reservation.seance_id);
+
+            const detailsContent = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="text-danger">Informations Client</h5>
+                        <p><strong>Nom:</strong> ${client.prenom} ${client.nom}</p>
+                        <p><strong>Email:</strong> ${client.email}</p>
+                        <p><strong>Téléphone:</strong> ${client.telephone || 'N/A'}</p>
+                        <p><strong>Statut:</strong> ${client.statut}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-danger">Détails Réservation</h5>
+                        <p><strong>Film:</strong> ${seance.film_titre} (${film.annee})</p>
+                        <p><strong>Séance:</strong> ${seance.date} ${seance.heure} (${seance.salle})</p>
+                        <p><strong>Version:</strong> ${seance.version}</p>
+                        <p><strong>Nombre de Places:</strong> ${reservation.nombre_places}</p>
+                        <p><strong>Sièges:</strong> ${reservation.sieges.join(', ')}</p>
+                        <p><strong>Statut:</strong> ${reservation.statut}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('reservationDetailsContent').innerHTML = detailsContent;
+            new bootstrap.Modal(document.getElementById('reservationDetailsModal')).show();
+        }
+
+        function editReservationModal(reservationId) {
+            const reservation = reservations.find(r => r.id === reservationId);
+            
+            Swal.fire({
+                title: 'Modifier la Réservation',
+                html: `
+                    <div class="container">
+                        <div class="row mb-3">
+                            <label class="col-4">Client:</label>
+                            <select id="editClientId" class="form-control col-8">
+                                ${clients.map(client => 
+                                    `<option value="${client.id}" ${client.id === reservation.client_id ? 'selected' : ''}>
+                                        ${client.prenom} ${client.nom}
+                                    </option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-4">Film:</label>
+                            <select id="editFilmId" class="form-control col-8">
+                                ${films.map(film => 
+                                    `<option value="${film.id}" ${film.id === reservation.film_id ? 'selected' : ''}>
+                                        ${film.titre} (${film.annee})
+                                    </option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-4">Séance:</label>
+                            <select id="editSeanceId" class="form-control col-8">
+                                ${seances.map(seance => 
+                                    `<option value="${seance.id}" ${seance.id === reservation.seance_id ? 'selected' : ''}>
+                                        ${seance.film_titre} - ${seance.date} ${seance.heure} (${seance.version})
+                                    </option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-4">Nombre de Places:</label>
+                            <input type="number" id="editNombrePlaces" class="form-control col-8" 
+                                   value="${reservation.nombre_places}" min="1" max="10">
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-4">Sièges:</label>
+                            <input type="text" id="editSieges" class="form-control col-8" 
+                                   value="${reservation.sieges.join(', ')}" 
+                                   placeholder="Ex: A1, A2, B1">
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-4">Statut:</label>
+                            <select id="editStatut" class="form-control col-8">
+                                <option value="Confirmé" ${reservation.statut === 'Confirmé' ? 'selected' : ''}>Confirmé</option>
+                                <option value="En Attente" ${reservation.statut === 'En Attente' ? 'selected' : ''}>En Attente</option>
+                            </select>
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Enregistrer',
+                cancelButtonText: 'Annuler',
+                preConfirm: () => {
+                    const updatedReservation = {
+                        client_id: parseInt(document.getElementById('editClientId').value),
+                        film_id: parseInt(document.getElementById('editFilmId').value),
+                        seance_id: parseInt(document.getElementById('editSeanceId').value),
+                        nombre_places: parseInt(document.getElementById('editNombrePlaces').value),
+                        sieges: document.getElementById('editSieges').value.split(',').map(s => s.trim()),
+                        statut: document.getElementById('editStatut').value
+                    };
+                    
+                    return updateReservation(reservationId, updatedReservation);
+                }
+            });
+        }
+
+        function createMyReservation() {
+            Swal.fire({
+                title: 'Créer une Réservation',
+                html: `
+                    <div class="container">
+                        <div class="row mb-3">
+                            <label class="col-4">Client:</label>
+                            <select id="newClientId" class="form-control col-8">
+                                ${clients.map(client => 
+                                    `<option value="${client.id}">
+                                        ${client.prenom} ${client.nom}
+                                    </option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-4">Film:</label>
+                            <select id="newFilmId" class="form-control col-8">
+                                ${films.map(film => 
+                                    `<option value="${film.id}">
+                                        ${film.titre} (${film.annee})
+                                    </option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-4">Séance:</label>
+                            <select id="newSeanceId" class="form-control col-8">
+                                ${seances.map(seance => 
+                                    `<option value="${seance.id}">
+                                        ${seance.film_titre} - ${seance.date} ${seance.heure} (${seance.version})
+                                    </option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-4">Nombre de Places:</label>
+                            <input type="number" id="newNombrePlaces" class="form-control col-8" 
+                                   min="1" max="10" value="1">
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-4">Sièges:</label>
+                            <input type="text" id="newSieges" class="form-control col-8" 
+                                   placeholder="Ex: A1, A2, B1">
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Créer',
+                cancelButtonText: 'Annuler',
+                preConfirm: () => {
+                    const newReservation = {
+                        client_id: parseInt(document.getElementById('newClientId').value),
+                        film_id: parseInt(document.getElementById('newFilmId').value),
+                        seance_id: parseInt(document.getElementById('newSeanceId').value),
+                        nombre_places: parseInt(document.getElementById('newNombrePlaces').value),
+                        sieges: document.getElementById('newSieges').value.split(',').map(s => s.trim())
+                    };
+                    
+                    return createReservation(newReservation);
+                }
+            });
+        }
+
+        // Add button to create my reservation
+        document.addEventListener('DOMContentLoaded', () => {
+            const myReservationBtn = document.createElement('button');
+            myReservationBtn.className = 'btn btn-info mb-3 ms-2';
+            myReservationBtn.textContent = 'Ma Réservation';
+            myReservationBtn.onclick = createMyReservation;
+            
+            // Find the add reservation button and insert after it
+            const addReservationBtn = document.querySelector('.btn-success');
+            if (addReservationBtn) {
+                addReservationBtn.parentNode.insertBefore(myReservationBtn, addReservationBtn.nextSibling);
+            }
+
+            // Call populateReservationsTable explicitly
+            populateReservationsTable();
+
+            // Add SweetAlert dynamically
+            const sweetalertCSS = document.createElement('link');
+            sweetalertCSS.rel = 'stylesheet';
+            sweetalertCSS.href = 'https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css';
+            document.head.appendChild(sweetalertCSS);
+
+            const sweetalertJS = document.createElement('script');
+            sweetalertJS.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js';
+            document.head.appendChild(sweetalertJS);
+        });
+    </script>
+</body>
+</html>

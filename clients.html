@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clients - Admin</title>
+    <link rel="stylesheet" href="admin_dashboard.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .salles-table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            margin-bottom: 1rem;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            color: black;
+        }
+
+        .salles-table thead {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .salles-table th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: black;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .salles-table td {
+            padding: 12px 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #dee2e6;
+            transition: background-color 0.3s ease;
+            color: black;
+        }
+
+        /* Modal Styles */
+        .modal-dialog {
+            max-width: 800px;
+        }
+
+        .modal-content {
+            background-color: black;
+            border: 2px solid #dc3545;
+            border-radius: 15px;
+        }
+
+        .modal-header {
+            background-color: black;
+            color: white;
+            border-bottom: 1px solid #dc3545;
+            padding: 15px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .modal-header .modal-title {
+            color: white;
+            font-weight: bold;
+        }
+
+        .modal-header .btn-close {
+            background-color: white;
+            opacity: 1;
+        }
+
+        .modal-body {
+            background-color: black;
+            color: white;
+            padding: 15px;
+        }
+
+        .modal-footer {
+            background-color: black;
+            border-top: 1px solid #dc3545;
+            padding: 15px;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        .modal-footer .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .modal-footer .btn-primary,
+        .modal-footer .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        /* Ajustements pour les formulaires dans les modales */
+        .modal .form-control,
+        .modal .form-select {
+            background-color: #1a1a1a;
+            color: white;
+            border: 1px solid #dc3545;
+        }
+
+        .modal .form-label {
+            color: white;
+        }
+
+        .add-salle-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #db1313;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-weight: 500;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-salle-btn i {
+            font-size: 1.2em;
+        }
+
+        .add-salle-btn:hover {
+            background-color: #2b2188;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .table-actions .btn {
+            margin-right: 0;
+            padding: 4px 8px;
+            font-size: 0.8em;
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .table-actions .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .table-actions .btn-warning {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .table-actions .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons .btn {
+            margin-right: 0;
+            padding: 4px 8px;
+            font-size: 0.8em;
+        }
+
+        .action-buttons .btn-info {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            color: white;
+        }
+
+        .action-buttons .btn-warning {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .action-buttons .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-left h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: #f80505;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-content">
+                <div class="sidebar-logo">
+                    <img src="logo.png" alt="Logo">
+                </div>
+                <nav>
+                    <ul>
+                        <li>
+                            <a href="admin_dashboard.html">
+                                <i class="bi bi-speedometer2"></i>
+                                <span>Tableau de Bord</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="films.html">
+                                <i class="bi bi-film"></i>
+                                <span>Films</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="reservation.html">
+                                <i class="bi bi-calendar-check"></i>
+                                <span>Réservations</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="seances.html">
+                                <i class="bi bi-clock"></i>
+                                <span>Seances</span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="clients.html">
+                                <i class="bi bi-people"></i>
+                                <span>Clients</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="salles.html">
+                                <i class="bi bi-buildings"></i>
+                                <span>Salles</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="profils.html">
+                                <i class="bi bi-person"></i>
+                                <span>Profile</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="sidebar-footer">
+                    <button onclick="logout()" class="logout-btn">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Déconnexion</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header>
+                <div class="header-left">
+                    <button class="sidebar-toggle" aria-label="Toggle Sidebar">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <h1>Clients</h1>
+                </div>
+                <div class="header-right">
+                    <button id="btn-add-client" class="add-salle-btn" data-bs-toggle="modal" data-bs-target="#ajouterClientModal">
+                        <i class="bi bi-plus"></i> Ajouter
+                    </button>
+                </div>
+            </header>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="search-client" placeholder="Rechercher un client...">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <select class="form-select" id="filter-type">
+                        <option value="">Tous les statuts</option>
+                        <option value="actif">Actif</option>
+                        <option value="inactif">Inactif</option>
+                        <option value="vip">VIP</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table salles-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Email</th>
+                            <th>Téléphone</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientsTableBody">
+                        <!-- Les clients seront ajoutés dynamiquement ici -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajout de Client -->
+    <div class="modal fade" id="ajouterClientModal" tabindex="-1" aria-labelledby="ajouterClientModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ajouterClientModalLabel">Ajouter un Client</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="ajouter-client-form">
+                        <div class="mb-3">
+                            <label for="ajouter-client-nom" class="form-label">Nom du Client</label>
+                            <input type="text" class="form-control" id="ajouter-client-nom" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ajouter-client-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="ajouter-client-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ajouter-client-telephone" class="form-label">Téléphone</label>
+                            <input type="tel" class="form-control" id="ajouter-client-telephone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ajouter-client-statut" class="form-label">Statut</label>
+                            <select class="form-select" id="ajouter-client-statut" required>
+                                <option value="">Sélectionner un statut</option>
+                                <option value="actif">Actif</option>
+                                <option value="inactif">Inactif</option>
+                                <option value="vip">VIP</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="save-ajouter-client-btn">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Édition de Client -->
+    <div class="modal fade" id="editerClientModal" tabindex="-1" aria-labelledby="editerClientModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editerClientModalLabel">Modifier un Client</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editer-client-form">
+                        <input type="hidden" id="editer-client-id">
+                        <div class="mb-3">
+                            <label for="editer-client-nom" class="form-label">Nom du Client</label>
+                            <input type="text" class="form-control" id="editer-client-nom" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editer-client-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editer-client-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editer-client-telephone" class="form-label">Téléphone</label>
+                            <input type="tel" class="form-control" id="editer-client-telephone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editer-client-statut" class="form-label">Statut</label>
+                            <select class="form-select" id="editer-client-statut" required>
+                                <option value="actif">Actif</option>
+                                <option value="inactif">Inactif</option>
+                                <option value="vip">VIP</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="save-editer-client-btn">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmation de Suppression -->
+    <div class="modal fade" id="deleteClientModal" tabindex="-1" aria-labelledby="deleteClientModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteClientModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmer la suppression
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir supprimer ce client ?</p>
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle me-2"></i>Cette action est irréversible et supprimera définitivement le client.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i>Annuler
+                    </button>
+                    <button type="button" id="confirm-delete-client" class="btn btn-danger">
+                        <i class="bi bi-trash me-2"></i>Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS et dépendances -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script de gestion des clients -->
+    <script src="clients.js"></script>
+</body>
+</html>

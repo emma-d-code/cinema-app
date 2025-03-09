@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Séances - CinéMa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.css' rel='stylesheet' />
+    <style>
+        :root {
+            --primary-color: #dc3545;
+            --secondary-color: #1a1a1a;
+        }
+
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            padding-top: 70px; 
+        }
+
+        .seances-container {
+            background-color: var(--secondary-color);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border-left: 10px solid var(--primary-color);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .fc {
+            background-color: #2c2c2c;
+            color: white;
+        }
+
+        .fc-theme-standard .fc-scrollgrid {
+            border-color: #444 !important;
+        }
+
+        .fc-theme-standard th {
+            background-color: var(--secondary-color) !important;
+            color: white !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        .fc-daygrid-day-number {
+            color: white !important;
+        }
+
+        .fc-event {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .fc-event:hover {
+            transform: scale(1.05);
+            background-color: #a71d2a !important;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #a71d2a;
+            border-color: #a71d2a;
+            transform: scale(1.05);
+        }
+
+        .modal-content {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .modal-header {
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .navbar {
+            background-color: var(--secondary-color) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .navbar .nav-link {
+            color: white !important;
+            transition: color 0.3s ease;
+        }
+
+        .navbar .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .navbar .nav-link.active {
+            color: var(--primary-color) !important;
+            font-weight: bold;
+        }
+
+        .navbar-brand {
+            color: var(--primary-color) !important;
+        }
+
+        .filter-section {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background-color: var(--secondary-color);
+            border-top: 2px solid var(--primary-color);
+        }
+        
+        .custom-event-card {
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            border-radius: 4px;
+            padding: 5px;
+            max-width: 100%;
+            overflow: hidden;
+        }
+        
+        .event-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .event-seances {
+            font-size: 0.8em;
+        }
+        
+        .seance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3px;
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .seance-time {
+            flex-grow: 1;
+        }
+        
+        .seance-salle {
+            margin: 0 10px;
+            opacity: 0.8;
+        }
+        
+        .seance-version {
+            font-size: 0.7em;
+        }
+        
+        /* Styles pour les événements de différents genres */
+        .fc-event.genre-action { background-color: #dc3545; }
+        .fc-event.genre-comedie { background-color: #28a745; }
+        .fc-event.genre-drame { background-color: #6c757d; }
+        .fc-event.genre-science-fiction { background-color: #17a2b8; }
+        .fc-event.genre-fantastique { background-color: #6f42c1; }
+        .fc-event.genre-horreur { background-color: #343a40; }
+        .fc-event.genre-aventure { background-color: #ffc107; color: black; }
+        .fc-event.genre-animation { background-color: #fd7e14; }
+        .fc-event.genre-romance { background-color: #e83e8c; }
+        .fc-event.genre-thriller { background-color: #007bff; }
+        .fc-event.genre-documentaire { background-color: #6c757d; }
+        
+        .film-card {
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        
+        .film-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .film-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .seance-table {
+            padding: 20px;
+        }
+        
+        .date-row {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .date-cell {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .seances-cell {
+            padding-left: 20px;
+        }
+        
+        .seance-badge {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .seance-badge:hover {
+            transform: scale(1.05);
+        }
+        
+        .day-card {
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        
+        .day-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .day-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .film-row {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .megarama-day-card {
+            background-color: rgba(26, 26, 26, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .megarama-day-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .megarama-day-header h3 {
+            margin: 0;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        
+        .megarama-seance-table {
+            padding: 20px;
+        }
+        
+        .megarama-film-row {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            padding: 15px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .megarama-film-row:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .megarama-film-info {
+            flex-grow: 1;
+            margin-right: 20px;
+        }
+        
+        .film-title {
+            font-weight: 600;
+            color: white;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .film-genre {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9em;
+        }
+        
+        .megarama-film-seances {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .megarama-seance-badge {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        .megarama-seance-badge:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .megarama-seance-badge .seance-time {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .megarama-seance-badge .seance-salle {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.8em;
+            margin-bottom: 3px;
+        }
+        
+        .megarama-seance-badge .seance-version {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.7em;
+            text-transform: uppercase;
+        }
+        
+        @media (max-width: 768px) {
+            .megarama-film-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .megarama-film-info {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .megarama-film-seances {
+                width: 100%;
+            }
+        }
+        
+        .date-selection-container {
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        
+        .date-selection-scroll {
+            overflow-x: auto;
+            white-space: nowrap;
+            gap: 10px;
+            padding-bottom: 10px;
+        }
+        
+        .date-badge {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .date-badge:hover {
+            background-color: var(--primary-color);
+        }
+        
+        .date-badge.active {
+            background-color: var(--primary-color);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center" href="home.html">
+                <img src="logo.png" alt="CinéMa Logo" width="50" height="50" class="me-2">
+                <span class="fw-bold">CinéMa</span>
+            </a>
+
+            <!-- Bouton mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Menu de navigation -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="home.html">
+                            <i class="fas fa-home me-2"></i>Accueil
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="home.html#films-section">
+                            <i class="fas fa-film me-2"></i>Films
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="user-seance.html">
+                            <i class="fas fa-ticket-alt me-2"></i>Séances
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="user-reservation.html">
+                            <i class="fas fa-calendar-check me-2"></i>Réservations
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container py-5">
+        <div class="container mt-5">
+            <div class="row">
+                <!-- Filtres -->
+                <div class="col-md-3">
+                    <div class="filter-section">
+                        <h5 class="mb-3" style="color: var(--primary-color);">Filtres</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Type de Film</label>
+                            <select class="form-select bg-dark text-white" id="filmTypeFilter">
+                                <option selected>Tous</option>
+                                <option>Action</option>
+                                <option>Comédie</option>
+                                <option>Drame</option>
+                                <option>Science-Fiction</option>
+                                <option>Fantastique</option>
+                                <option>Horreur</option>
+                                <option>Aventure</option>
+                                <option>Animation</option>
+                                <option>Romance</option>
+                                <option>Thriller</option>
+                                <option>Documentaire</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Version</label>
+                            <select class="form-select bg-dark text-white" id="versionFilter">
+                                <option selected>Toutes</option>
+                                <option>VF</option>
+                                <option>VOST</option>
+                                <option>3D</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Programmation -->
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="date-selection-scroll d-flex overflow-auto">
+                                        <!-- Les badges de dates seront générés dynamiquement ici -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Conteneur pour les messages de séances -->
+                            <div id="seancesMessage" class="text-center my-4" style="display: none;">
+                                <div class="alert alert-warning" role="alert">
+                                    <h4>Aucune séance disponible</h4>
+                                    <p>Il n'y a pas de séances programmées pour le moment.</p>
+                                    <a href="seances.html" class="btn btn-primary mt-3">Ajouter des séances</a>
+                                </div>
+                            </div>
+
+                            <!-- Programmation des séances -->
+                            <div id="seanceProgramming" class="seance-programming">
+                                <!-- Les séances seront générées dynamiquement ici -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seance Details Modal -->
+        <div class="modal fade" id="seanceDetailsModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="seanceModalTitle">Détails de la Séance</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" id="seanceModalBody">
+                        <!-- Seance details will be dynamically populated here -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        <button type="button" class="btn btn-primary" id="reserveButton">Réserver</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-white text-center py-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6>Contactez-nous</h6>
+                        <p>Email: contact@cinema.com<br>Tél: 01 23 45 67 89</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Liens Rapides</h6>
+                        <ul class="list-unstyled">
+                            <li><a href="home.html" class="text-white">Accueil</a></li>
+                            <li><a href="films.html" class="text-white">Films</a></li>
+                            <li><a href="user-seance.html" class="text-white">Séances</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Suivez-nous</h6>
+                        <div>
+                            <a href="#" class="text-white me-2"><i class="fab fa-facebook"></i></a>
+                            <a href="#" class="text-white me-2"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <hr class="bg-light">
+                <p class="mb-0">&copy; 2024 CinéMa. Tous droits réservés.</p>
+            </div>
+        </footer>
+
+        <!-- External Libraries -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.js'></script>
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/locales/fr.js'></script>
+
+        <!-- Page-specific JavaScript -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Page chargée, début du script de séances');
+                
+                // Récupérer les éléments du DOM
+                const dateSelectionContainer = document.querySelector('.date-selection-scroll');
+                const programmingContainer = document.getElementById('seanceProgramming');
+                const seancesMessage = document.getElementById('seancesMessage');
+                
+                // Vérifier que les éléments existent
+                if (!dateSelectionContainer || !programmingContainer || !seancesMessage) {
+                    console.error('Éléments du DOM manquants');
+                    return;
+                }
+                
+                // Charger les données depuis localStorage
+                const films = JSON.parse(localStorage.getItem('films') || '[]');
+                const salles = JSON.parse(localStorage.getItem('salles') || '[]');
+                const seances = JSON.parse(localStorage.getItem('seances') || '[]');
+                
+                console.log('Données chargées:', { 
+                    films: films.length, 
+                    salles: salles.length, 
+                    seances: seances.length 
+                });
+                
+                // Message d'erreur si aucune donnée n'est disponible
+                if (films.length === 0 || salles.length === 0 || seances.length === 0) {
+                    seancesMessage.innerHTML = `
+                        <h4>Aucune séance disponible</h4>
+                        <p>Les données de séances n'ont pas été chargées correctement.</p>
+                        <p>Causes possibles:</p>
+                        <ul>
+                            ${films.length === 0 ? '<li>Aucun film trouvé</li>' : ''}
+                            ${salles.length === 0 ? '<li>Aucune salle de cinéma configurée</li>' : ''}
+                            ${seances.length === 0 ? '<li>Aucune séance programmée</li>' : ''}
+                        </ul>
+                        <a href="films.html" class="btn btn-primary mt-3">Ajouter des films</a>
+                    `;
+                    seancesMessage.style.display = 'block';
+                    return;
+                }
+                
+                // Fonction de formatage de la date
+                function formatDate(dateString) {
+                    const date = new Date(dateString);
+                    return {
+                        full: date.toLocaleDateString('fr-FR', { 
+                            weekday: 'long', 
+                            day: 'numeric', 
+                            month: 'long' 
+                        }),
+                        short: date.toLocaleDateString('fr-FR', { 
+                            day: 'numeric', 
+                            month: 'short' 
+                        })
+                    };
+                }
+                
+                // Regrouper les séances par jour
+                const seancesByDay = {};
+                seances.forEach(seance => {
+                    const film = films.find(f => f.id == seance.film);
+                    const salle = salles.find(s => s.id == seance.salle);
+                    
+                    if (!film) return;
+                    
+                    if (!seancesByDay[seance.date]) {
+                        seancesByDay[seance.date] = {
+                            formattedDate: formatDate(seance.date),
+                            seances: []
+                        };
+                    }
+                    
+                    seancesByDay[seance.date].seances.push({
+                        film: film,
+                        heure: seance.heure,
+                        salle: salle || { nom: 'Salle inconnue', type: 'Type non défini' },
+                        version: seance.version
+                    });
+                });
+                
+                // Trier les dates
+                const sortedDates = Object.keys(seancesByDay).sort((a, b) => new Date(a) - new Date(b));
+                
+                console.log('Dates disponibles:', sortedDates);
+                
+                // Générer les badges de dates
+                sortedDates.forEach(date => {
+                    const dateBadge = document.createElement('span');
+                    dateBadge.classList.add('date-badge');
+                    
+                    const dateInfo = seancesByDay[date].formattedDate;
+                    dateBadge.textContent = dateInfo.short;
+                    dateBadge.setAttribute('data-date', date);
+                    dateBadge.setAttribute('title', dateInfo.full);
+                    
+                    dateBadge.addEventListener('click', function() {
+                        // Réinitialiser l'état actif des badges
+                        document.querySelectorAll('.date-badge').forEach(badge => 
+                            badge.classList.remove('active')
+                        );
+                        
+                        // Marquer le badge comme actif
+                        this.classList.add('active');
+                        
+                        // Filtrer et afficher les séances pour cette date
+                        programmingContainer.innerHTML = ''; // Vider le conteneur
+                        
+                        const dayData = seancesByDay[date];
+                        const daySeances = dayData.seances;
+                        
+                        // Créer la carte de jour
+                        const dayCard = document.createElement('div');
+                        dayCard.classList.add('megarama-day-card', 'mb-4');
+                        
+                        // En-tête de la carte
+                        const dayHeader = document.createElement('div');
+                        dayHeader.classList.add('megarama-day-header');
+                        dayHeader.innerHTML = `
+                            <h3>${dayData.formattedDate.full}</h3>
+                        `;
+                        dayCard.appendChild(dayHeader);
+                        
+                        // Créer le tableau des séances
+                        const seanceTable = document.createElement('div');
+                        seanceTable.classList.add('megarama-seance-table');
+                        
+                        // Regrouper les séances par film
+                        const seancesByFilm = {};
+                        daySeances.forEach(seance => {
+                            if (!seancesByFilm[seance.film.id]) {
+                                seancesByFilm[seance.film.id] = {
+                                    film: seance.film,
+                                    seances: []
+                                };
+                            }
+                            seancesByFilm[seance.film.id].seances.push(seance);
+                        });
+                        
+                        // Trier les films
+                        const sortedFilms = Object.values(seancesByFilm)
+                            .sort((a, b) => a.film.titre.localeCompare(b.film.titre));
+                        
+                        // Générer les lignes de films
+                        sortedFilms.forEach(filmData => {
+                            const film = filmData.film;
+                            const filmSeances = filmData.seances;
+                            
+                            // Créer la ligne de film
+                            const filmRow = document.createElement('div');
+                            filmRow.classList.add('megarama-film-row');
+                            
+                            // Informations du film
+                            const filmInfo = document.createElement('div');
+                            filmInfo.classList.add('megarama-film-info');
+                            filmInfo.innerHTML = `
+                                <div class="film-title">${film.titre}</div>
+                                <div class="film-genre">${film.genre || 'Genre non défini'}</div>
+                            `;
+                            filmRow.appendChild(filmInfo);
+                            
+                            // Séances du film
+                            const filmSeanceContainer = document.createElement('div');
+                            filmSeanceContainer.classList.add('megarama-film-seances');
+                            
+                            // Trier les séances par heure
+                            const sortedSeances = filmSeances
+                                .sort((a, b) => {
+                                    const [hoursA, minutesA] = a.heure.split(':').map(Number);
+                                    const [hoursB, minutesB] = b.heure.split(':').map(Number);
+                                    return hoursA * 60 + minutesA - (hoursB * 60 + minutesB);
+                                });
+                            
+                            // Créer les badges de séance
+                            sortedSeances.forEach(seance => {
+                                const seanceBadge = document.createElement('span');
+                                seanceBadge.classList.add('megarama-seance-badge');
+                                seanceBadge.setAttribute('data-date', date);
+                                seanceBadge.setAttribute('data-heure', seance.heure);
+                                seanceBadge.setAttribute('data-salle', seance.salle.nom);
+                                seanceBadge.setAttribute('data-film', film.titre);
+                                seanceBadge.setAttribute('data-version', seance.version);
+                                
+                                seanceBadge.innerHTML = `
+                                    <span class="seance-time">${seance.heure}</span>
+                                    <span class="seance-salle">${seance.salle.nom} (${seance.salle.type || 'Type non défini'})</span>
+                                    <span class="seance-version">${seance.version}</span>
+                                `;
+                                
+                                seanceBadge.addEventListener('click', function() {
+                                    // Mettre à jour le modal
+                                    document.getElementById('seanceModalTitle').textContent = 'Détails de la Séance';
+                                    
+                                    const modalBody = document.getElementById('seanceModalBody');
+                                    modalBody.innerHTML = `
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h4 class="mb-3">Informations de la Séance</h4>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <td>${new Date(date).toLocaleDateString('fr-FR', { 
+                                                            weekday: 'long', 
+                                                            day: 'numeric', 
+                                                            month: 'long', 
+                                                            year: 'numeric' 
+                                                        })}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Film</th>
+                                                        <td>${film.titre}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Heure</th>
+                                                        <td>${seance.heure}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Salle</th>
+                                                        <td>${seance.salle.nom} (${seance.salle.type || 'Type non défini'})</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Version</th>
+                                                        <td>${seance.version}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    `;
+                                    
+                                    // Afficher le modal
+                                    const modal = new bootstrap.Modal(document.getElementById('seanceDetailsModal'));
+                                    modal.show();
+                                });
+                                
+                                const reserveButton = document.createElement('button');
+                                reserveButton.classList.add('btn', 'btn-success', 'btn-reserver');
+                                reserveButton.textContent = 'Réserver';
+                                reserveButton.setAttribute('data-date', date);
+                                reserveButton.setAttribute('data-heure', seance.heure);
+                                reserveButton.setAttribute('data-salle', seance.salle.nom);
+                                reserveButton.setAttribute('data-film', film.titre);
+                                reserveButton.setAttribute('data-version', seance.version);
+                                reserveButton.setAttribute('data-film-id', film.id);
+                                reserveButton.setAttribute('data-salle-id', seance.salle.id);
+                                reserveButton.addEventListener('click', function() {
+                                    window.location.href = `user-reservation.html?date=${date}&heure=${seance.heure}&salle=${seance.salle.nom}&film=${film.titre}&version=${seance.version}&filmId=${film.id}&salleId=${seance.salle.id}`;
+                                });
+                                
+                                filmSeanceContainer.appendChild(seanceBadge);
+                                filmSeanceContainer.appendChild(reserveButton);
+                            });
+                            
+                            filmRow.appendChild(filmSeanceContainer);
+                            seanceTable.appendChild(filmRow);
+                        });
+                        
+                        dayCard.appendChild(seanceTable);
+                        programmingContainer.appendChild(dayCard);
+                    });
+                    
+                    dateBadge.addEventListener('click', function() {
+                        // Réinitialiser l'état actif des badges
+                        document.querySelectorAll('.date-badge').forEach(badge => 
+                            badge.classList.remove('active')
+                        );
+                        
+                        // Marquer le badge comme actif
+                        this.classList.add('active');
+                        
+                        // Filtrer et afficher les séances pour cette date
+                        programmingContainer.innerHTML = ''; // Vider le conteneur
+                        
+                        const dayData = seancesByDay[date];
+                        const daySeances = dayData.seances;
+                        
+                        // Créer la carte de jour
+                        const dayCard = document.createElement('div');
+                        dayCard.classList.add('megarama-day-card', 'mb-4');
+                        
+                        // En-tête de la carte
+                        const dayHeader = document.createElement('div');
+                        dayHeader.classList.add('megarama-day-header');
+                        dayHeader.innerHTML = `
+                            <h3>${dayData.formattedDate.full}</h3>
+                        `;
+                        dayCard.appendChild(dayHeader);
+                        
+                        // Créer le tableau des séances
+                        const seanceTable = document.createElement('div');
+                        seanceTable.classList.add('megarama-seance-table');
+                        
+                        // Regrouper les séances par film
+                        const seancesByFilm = {};
+                        daySeances.forEach(seance => {
+                            if (!seancesByFilm[seance.film.id]) {
+                                seancesByFilm[seance.film.id] = {
+                                    film: seance.film,
+                                    seances: []
+                                };
+                            }
+                            seancesByFilm[seance.film.id].seances.push(seance);
+                        });
+                        
+                        // Trier les films
+                        const sortedFilms = Object.values(seancesByFilm)
+                            .sort((a, b) => a.film.titre.localeCompare(b.film.titre));
+                        
+                        // Générer les lignes de films
+                        sortedFilms.forEach(filmData => {
+                            const film = filmData.film;
+                            const filmSeances = filmData.seances;
+                            
+                            // Créer la ligne de film
+                            const filmRow = document.createElement('div');
+                            filmRow.classList.add('megarama-film-row');
+                            
+                            // Informations du film
+                            const filmInfo = document.createElement('div');
+                            filmInfo.classList.add('megarama-film-info');
+                            filmInfo.innerHTML = `
+                                <div class="film-title">${film.titre}</div>
+                                <div class="film-genre">${film.genre || 'Genre non défini'}</div>
+                            `;
+                            filmRow.appendChild(filmInfo);
+                            
+                            // Séances du film
+                            const filmSeanceContainer = document.createElement('div');
+                            filmSeanceContainer.classList.add('megarama-film-seances');
+                            
+                            // Trier les séances par heure
+                            const sortedSeances = filmSeances
+                                .sort((a, b) => {
+                                    const [hoursA, minutesA] = a.heure.split(':').map(Number);
+                                    const [hoursB, minutesB] = b.heure.split(':').map(Number);
+                                    return hoursA * 60 + minutesA - (hoursB * 60 + minutesB);
+                                });
+                            
+                            // Créer les badges de séance
+                            sortedSeances.forEach(seance => {
+                                const seanceBadge = document.createElement('span');
+                                seanceBadge.classList.add('megarama-seance-badge');
+                                seanceBadge.setAttribute('data-date', date);
+                                seanceBadge.setAttribute('data-heure', seance.heure);
+                                seanceBadge.setAttribute('data-salle', seance.salle.nom);
+                                seanceBadge.setAttribute('data-film', film.titre);
+                                seanceBadge.setAttribute('data-version', seance.version);
+                                
+                                seanceBadge.innerHTML = `
+                                    <span class="seance-time">${seance.heure}</span>
+                                    <span class="seance-salle">${seance.salle.nom} (${seance.salle.type || 'Type non défini'})</span>
+                                    <span class="seance-version">${seance.version}</span>
+                                `;
+                                
+                                seanceBadge.addEventListener('click', function() {
+                                    // Mettre à jour le modal
+                                    document.getElementById('seanceModalTitle').textContent = 'Détails de la Séance';
+                                    
+                                    const modalBody = document.getElementById('seanceModalBody');
+                                    modalBody.innerHTML = `
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h4 class="mb-3">Informations de la Séance</h4>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <td>${new Date(date).toLocaleDateString('fr-FR', { 
+                                                            weekday: 'long', 
+                                                            day: 'numeric', 
+                                                            month: 'long', 
+                                                            year: 'numeric' 
+                                                        })}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Film</th>
+                                                        <td>${film.titre}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Heure</th>
+                                                        <td>${seance.heure}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Salle</th>
+                                                        <td>${seance.salle.nom} (${seance.salle.type || 'Type non défini'})</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Version</th>
+                                                        <td>${seance.version}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    `;
+                                    
+                                    // Afficher le modal
+                                    const modal = new bootstrap.Modal(document.getElementById('seanceDetailsModal'));
+                                    modal.show();
+                                });
+                                
+                                const reserveButton = document.createElement('button');
+                                reserveButton.classList.add('btn', 'btn-success', 'btn-reserver');
+                                reserveButton.textContent = 'Réserver';
+                                reserveButton.setAttribute('data-date', date);
+                                reserveButton.setAttribute('data-heure', seance.heure);
+                                reserveButton.setAttribute('data-salle', seance.salle.nom);
+                                reserveButton.setAttribute('data-film', film.titre);
+                                reserveButton.setAttribute('data-version', seance.version);
+                                reserveButton.setAttribute('data-film-id', film.id);
+                                reserveButton.setAttribute('data-salle-id', seance.salle.id);
+                                reserveButton.addEventListener('click', function() {
+                                    window.location.href = `user-reservation.html?date=${date}&heure=${seance.heure}&salle=${seance.salle.nom}&film=${film.titre}&version=${seance.version}&filmId=${film.id}&salleId=${seance.salle.id}`;
+                                });
+                                
+                                filmSeanceContainer.appendChild(seanceBadge);
+                                filmSeanceContainer.appendChild(reserveButton);
+                            });
+                            
+                            filmRow.appendChild(filmSeanceContainer);
+                            seanceTable.appendChild(filmRow);
+                        });
+                        
+                        dayCard.appendChild(seanceTable);
+                        programmingContainer.appendChild(dayCard);
+                    });
+                    
+                    dateBadge.addEventListener('click', function() {
+                        // Réinitialiser l'état actif des badges
+                        document.querySelectorAll('.date-badge').forEach(badge => 
+                            badge.classList.remove('active')
+                        );
+                        
+                        // Marquer le badge comme actif
+                        this.classList.add('active');
+                        
+                        // Filtrer et afficher les séances pour cette date
+                        programmingContainer.innerHTML = ''; // Vider le conteneur
+                        
+                        const dayData = seancesByDay[date];
+                        const daySeances = dayData.seances;
+                        
+                        // Créer la carte de jour
+                        const dayCard = document.createElement('div');
+                        dayCard.classList.add('megarama-day-card', 'mb-4');
+                        
+                        // En-tête de la carte
+                        const dayHeader = document.createElement('div');
+                        dayHeader.classList.add('megarama-day-header');
+                        dayHeader.innerHTML = `
+                            <h3>${dayData.formattedDate.full}</h3>
+                        `;
+                        dayCard.appendChild(dayHeader);
+                        
+                        // Créer le tableau des séances
+                        const seanceTable = document.createElement('div');
+                        seanceTable.classList.add('megarama-seance-table');
+                        
+                        // Regrouper les séances par film
+                        const seancesByFilm = {};
+                        daySeances.forEach(seance => {
+                            if (!seancesByFilm[seance.film.id]) {
+                                seancesByFilm[seance.film.id] = {
+                                    film: seance.film,
+                                    seances: []
+                                };
+                            }
+                            seancesByFilm[seance.film.id].seances.push(seance);
+                        });
+                        
+                        // Trier les films
+                        const sortedFilms = Object.values(seancesByFilm)
+                            .sort((a, b) => a.film.titre.localeCompare(b.film.titre));
+                        
+                        // Générer les lignes de films
+                        sortedFilms.forEach(filmData => {
+                            const film = filmData.film;
+                            const filmSeances = filmData.seances;
+                            
+                            // Créer la ligne de film
+                            const filmRow = document.createElement('div');
+                            filmRow.classList.add('megarama-film-row');
+                            
+                            // Informations du film
+                            const filmInfo = document.createElement('div');
+                            filmInfo.classList.add('megarama-film-info');
+                            filmInfo.innerHTML = `
+                                <div class="film-title">${film.titre}</div>
+                                <div class="film-genre">${film.genre || 'Genre non défini'}</div>
+                            `;
+                            filmRow.appendChild(filmInfo);
+                            
+                            // Séances du film
+                            const filmSeanceContainer = document.createElement('div');
+                            filmSeanceContainer.classList.add('megarama-film-seances');
+                            
+                            // Trier les séances par heure
+                            const sortedSeances = filmSeances
+                                .sort((a, b) => {
+                                    const [hoursA, minutesA] = a.heure.split(':').map(Number);
+                                    const [hoursB, minutesB] = b.heure.split(':').map(Number);
+                                    return hoursA * 60 + minutesA - (hoursB * 60 + minutesB);
+                                });
+                            
+                            // Créer les badges de séance
+                            sortedSeances.forEach(seance => {
+                                const seanceBadge = document.createElement('span');
+                                seanceBadge.classList.add('megarama-seance-badge');
+                                seanceBadge.setAttribute('data-date', date);
+                                seanceBadge.setAttribute('data-heure', seance.heure);
+                                seanceBadge.setAttribute('data-salle', seance.salle.nom);
+                                seanceBadge.setAttribute('data-film', film.titre);
+                                seanceBadge.setAttribute('data-version', seance.version);
+                                
+                                seanceBadge.innerHTML = `
+                                    <span class="seance-time">${seance.heure}</span>
+                                    <span class="seance-salle">${seance.salle.nom} (${seance.salle.type || 'Type non défini'})</span>
+                                    <span class="seance-version">${seance.version}</span>
+                                `;
+                                
+                                seanceBadge.addEventListener('click', function() {
+                                    // Mettre à jour le modal
+                                    document.getElementById('seanceModalTitle').textContent = 'Détails de la Séance';
+                                    
+                                    const modalBody = document.getElementById('seanceModalBody');
+                                    modalBody.innerHTML = `
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h4 class="mb-3">Informations de la Séance</h4>
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <td>${new Date(date).toLocaleDateString('fr-FR', { 
+                                                            weekday: 'long', 
+                                                            day: 'numeric', 
+                                                            month: 'long', 
+                                                            year: 'numeric' 
+                                                        })}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Film</th>
+                                                        <td>${film.titre}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Heure</th>
+                                                        <td>${seance.heure}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Salle</th>
+                                                        <td>${seance.salle.nom} (${seance.salle.type || 'Type non défini'})</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Version</th>
+                                                        <td>${seance.version}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    `;
+                                    
+                                    // Afficher le modal
+                                    const modal = new bootstrap.Modal(document.getElementById('seanceDetailsModal'));
+                                    modal.show();
+                                });
+                                
+                                const reserveButton = document.createElement('button');
+                                reserveButton.classList.add('btn', 'btn-success', 'btn-reserver');
+                                reserveButton.textContent = 'Réserver';
+                                reserveButton.setAttribute('data-date', date);
+                                reserveButton.setAttribute('data-heure', seance.heure);
+                                reserveButton.setAttribute('data-salle', seance.salle.nom);
+                                reserveButton.setAttribute('data-film', film.titre);
+                                reserveButton.setAttribute('data-version', seance.version);
+                                reserveButton.setAttribute('data-film-id', film.id);
+                                reserveButton.setAttribute('data-salle-id', seance.salle.id);
+                                reserveButton.addEventListener('click', function() {
+                                    window.location.href = `user-reservation.html?date=${date}&heure=${seance.heure}&salle=${seance.salle.nom}&film=${film.titre}&version=${seance.version}&filmId=${film.id}&salleId=${seance.salle.id}`;
+                                });
+                                
+                                filmSeanceContainer.appendChild(seanceBadge);
+                                filmSeanceContainer.appendChild(reserveButton);
+                            });
+                            
+                            filmRow.appendChild(filmSeanceContainer);
+                            seanceTable.appendChild(filmRow);
+                        });
+                        
+                        dayCard.appendChild(seanceTable);
+                        programmingContainer.appendChild(dayCard);
+                    });
+                    
+                    dateSelectionContainer.appendChild(dateBadge);
+                });
+                
+                // Sélectionner la première date par défaut
+                const firstDateBadge = dateSelectionContainer.querySelector('.date-badge');
+                if (firstDateBadge) {
+                    console.log('Sélection de la première date');
+                    firstDateBadge.click();
+                } else {
+                    console.warn('Aucune date trouvée');
+                }
+            });
+        </script>
+    </body>
+</html>

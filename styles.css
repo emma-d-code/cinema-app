@@ -1,0 +1,120 @@
+body {
+    background-color: #f4f4f4;
+    font-family: 'Arial', sans-serif;
+}
+
+.section-title {
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.card {
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card-img-top {
+    width: 100%;
+    height: auto;
+}
+
+.navbar {
+    background-color: #1a1a1a !important;
+}
+
+footer {
+    background-color: #1a1a1a !important;
+}
+
+@media (max-width: 768px) {
+    .card-img-top {
+        height: auto;
+    }
+}
+
+.siege-legende-item {
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.siege-legende-item:hover {
+    transform: scale(1.1);
+}
+
+.siege-legende-item .siege {
+    width: 50px;
+    height: 70px;
+    margin-right: 10px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.siege-legende-item span {
+    color: #2c3e50;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
+
+.siege-legende-item:hover span {
+    color: #3498db;
+}
+
+/* Styles spécifiques pour chaque type de siège */
+.siege-legende-item .siege.disponible {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+.siege-legende-item .siege.selectionne {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.siege-legende-item .siege.indisponible {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    opacity: 0.7;
+}
+
+.siege-legende-item .siege.handicap {
+    background: linear-gradient(135deg, #f39c12, #d35400);
+    position: relative;
+}
+
+.siege-legende-item .siege.handicap::after {
+    content: '♿';
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1rem;
+    color: #d35400;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .siege-legende {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .siege-legende .row {
+        flex-direction: column;
+    }
+
+    .siege-legende-item {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}

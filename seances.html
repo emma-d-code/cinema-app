@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seances - Admin</title>
+    <link rel="stylesheet" href="admin_dashboard.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .seances-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 1rem;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .seances-table thead {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .seances-table th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .seances-table td {
+            padding: 12px 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .seances-table tr:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            background-color: black;
+            border: 2px solid #dc3545;
+            border-radius: 15px;
+        }
+
+        .modal-header {
+            background-color: black;
+            color: white;
+            border-bottom: 1px solid #dc3545;
+            padding: 15px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .modal-header .btn-close {
+            background-color: white;
+            opacity: 1;
+        }
+
+        .modal-header .modal-title {
+            color: white;
+            font-weight: bold;
+        }
+
+        .modal-body {
+            background-color: black;
+            color: white;
+            padding: 20px;
+        }
+
+        .modal-footer {
+            background-color: black;
+            border-top: 1px solid #dc3545;
+            padding: 15px;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        .btn-ajouter-seance {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #db1313;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-weight: 500;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-ajouter-seance i {
+            font-size: 1.2em;
+        }
+
+        .btn-ajouter-seance:hover {
+            background-color: #2b2188;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons .btn {
+            margin-right: 0;
+            padding: 4px 8px;
+            font-size: 0.8em;
+        }
+
+        .action-buttons .btn-info {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            color: white;
+        }
+
+        .action-buttons .btn-warning {
+            background-color: green;
+            border-color: green;
+            color: white;
+        }
+
+        .action-buttons .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .action-btn {
+            display: inline-block;
+            font-weight: 400;
+            text-align: center;
+            vertical-align: middle;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        }
+
+        .btn-editer {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+        
+        .btn-editer:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+        .btn-supprimer {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-supprimer:hover {
+            background-color: #bd2130;
+            border-color: #a71d2a;
+        }
+
+        /* Badge styling with background */
+        .badge {
+            font-size: 0.7em;
+            margin-left: 5px;
+            padding: 0.2em 0.4em;
+            border-radius: 0.25rem;
+        }
+
+        /* Specific badge backgrounds */
+        .badge[data-statut="en salle"] {
+            background-color: rgba(0, 255, 0, 0.2) !important;
+            color: green !important;
+        }
+
+        .badge[data-statut="à venir"] {
+            background-color: rgba(255, 165, 0, 0.2) !important;
+            color: orange !important;
+        }
+
+        .badge[data-statut="terminé"] {
+            background-color: rgba(255, 0, 0, 0.2) !important;
+            color: red !important;
+        }
+
+        /* Salle type badge styling */
+        .badge-salle-type {
+            font-size: 0.7em;
+            padding: 0.2em 0.4em;
+            margin-left: 5px;
+        }
+
+        /* Color variations for different salle types */
+        .badge-salle-type-3d {
+            background-color: #007bff !important;
+            color: white !important;
+        }
+
+        .badge-salle-type-imax {
+            background-color: #28a745 !important;
+            color: white !important;
+        }
+
+        .badge-salle-type-standard {
+            background-color: #6c757d !important;
+            color: white !important;
+        }
+
+        .badge-salle-type-vip {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+
+        /* Styles pour différencier les types de salles */
+        .salle-type-standard {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+        
+        .salle-type-premium {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .salle-type-imax {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        
+        /* Style pour les options de sélection */
+        select option.salle-type-standard {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+        
+        select option.salle-type-premium {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        select option.salle-type-imax {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        /* Styles pour différencier les types de salles avec une palette étendue */
+        .salle-type-standard {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+        
+        .salle-type-premium {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .salle-type-imax {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        
+        .salle-type-3d {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .salle-type-dolby-atmos {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .salle-type-vip {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .salle-type-4dx {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .salle-type-cinema-club {
+            background-color: #d6d8db;
+            color: #1b1e21;
+        }
+        
+        /* Style pour les options de sélection */
+        select option.salle-type-standard { background-color: #e9ecef; color: #495057; }
+        select option.salle-type-premium { background-color: #d4edda; color: #155724; }
+        select option.salle-type-imax { background-color: #cce5ff; color: #004085; }
+        select option.salle-type-3d { background-color: #fff3cd; color: #856404; }
+        select option.salle-type-dolby-atmos { background-color: #f8d7da; color: #721c24; }
+        select option.salle-type-vip { background-color: #d1ecf1; color: #0c5460; }
+        select option.salle-type-4dx { background-color: #e2e3e5; color: #383d41; }
+        select option.salle-type-cinema-club { background-color: #d6d8db; color: #1b1e21; }
+
+        /* Styles pour différencier les statuts de films */
+        .film-statut-en-salle {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .film-statut-prochainement, 
+        .film-statut-bientot {
+            background-color: #ffc107;  /* Jaune vif */
+            color: #212529;  /* Texte noir pour contraste */
+        }
+        
+        .film-statut-termine {
+            background-color: #e2e3e5;
+            color: #6c757d;
+        }
+        
+        .film-statut-avant-premiere {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        
+        .film-statut-non-defini {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Style pour les options de sélection de films */
+        select option.film-statut-en-salle { background-color: #d4edda; color: #155724; }
+        select option.film-statut-prochainement, 
+        select option.film-statut-bientot { 
+            background-color: #ffc107;  /* Jaune vif */
+            color: #212529;  /* Texte noir pour contraste */
+        }
+        select option.film-statut-termine { background-color: #e2e3e5; color: #6c757d; }
+        select option.film-statut-avant-premiere { background-color: #cce5ff; color: #004085; }
+        select option.film-statut-non-defini { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-content">
+                <div class="sidebar-logo">
+                    <img src="logo.png" alt="Logo">
+                </div>
+                <nav>
+                    <ul>
+                        <li>
+                            <a href="admin_dashboard.html">
+                                <i class="bi bi-speedometer2"></i>
+                                <span>Tableau de Bord</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="films.html">
+                                <i class="bi bi-film"></i>
+                                <span>Films</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="reservation.html">
+                                <i class="bi bi-calendar-check"></i>
+                                <span>Réservations</span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="seances.html">
+                                <i class="bi bi-clock"></i>
+                                <span>Seances</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="clients.html">
+                                <i class="bi bi-people"></i>
+                                <span>Clients</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="salles.html">
+                                <i class="bi bi-buildings"></i>
+                                <span>Salles</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="profils.html">
+                                <i class="bi bi-person"></i>
+                                <span>Profile</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="sidebar-footer">
+                    <button class="logout-btn" id="logout-button">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Déconnexion</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <header>
+                <div class="header-left">
+                    <button class="sidebar-toggle" aria-label="Toggle Sidebar">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <h1>Seances</h1>
+                </div>
+                <div class="header-right">
+                    <button class="btn-ajouter-seance" data-bs-toggle="modal" data-bs-target="#modal-ajouter-seance">
+                        <i class="bi bi-plus-circle"></i>
+                        Ajouter 
+                    </button>
+                </div>
+            </header>
+
+            <div class="container-fluid">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" id="search-seance" class="form-control" placeholder="Rechercher une séance...">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <select id="filter-film" class="form-select">
+                                    <option value="">Tous les Films</option>
+                                    <!-- Film options will be dynamically populated -->
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <select id="filter-salle" class="form-select">
+                                    <option value="">Toutes les Salles</option>
+                                    <!-- Salle options will be dynamically populated -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-wrapper">
+                <div class="container-fluid mt-4">
+                    <div class="card shadow-sm">
+                        
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="seances-table">
+                                    <thead>
+                                        <tr>
+                                            <th><strong>ID</strong></th>
+                                            <th><strong>Film</strong></th>
+                                            <th><strong>Salle</strong></th>
+                                            <th><strong>Date</strong></th>
+                                            <th><strong>Heure</strong></th>
+                                            <th><strong>Version</strong></th>
+                                            <th><strong>Actions</strong></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="seances-table-body">
+                                        <!-- Seances will be dynamically populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Ajouter Seance -->
+    <div class="modal fade" id="modal-ajouter-seance" tabindex="-1" aria-labelledby="modal-ajouter-seance-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-ajouter-seance-label">Ajouter une Séance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-ajouter-seance">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="seance-film" class="form-label">Film</label>
+                                <select id="seance-film" class="form-select" required>
+                                    <option value="">Sélectionner un film</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="seance-salle" class="form-label">Salle</label>
+                                <select id="seance-salle" class="form-select" required>
+                                    <option value="">Sélectionner une salle</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="seance-date" class="form-label">Date</label>
+                                <input type="date" id="seance-date" class="form-control" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="seance-heure" class="form-label">Heure</label>
+                                <input type="time" id="seance-heure" class="form-control" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="seance-version" class="form-label">Version de diffusion</label>
+                                <select class="form-select" id="seance-version" required>
+                                    <option value="">Sélectionner une version</option>
+                                    <option value="VF">Version Française</option>
+                                    <option value="VOST">Version Sous-Titrée</option>
+                                    <option value="VO">Version Originale</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-primary" id="save-seance-ajouter-btn">Ajouter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Modifier Seance -->
+    <div class="modal fade" id="modal-modifier-seance" tabindex="-1" aria-labelledby="modal-modifier-seance-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-modifier-seance-label">Modifier une Séance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-modifier-seance">
+                        <input type="hidden" id="modifier-seance-id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="modifier-seance-film" class="form-label">Film</label>
+                                <select class="form-select" id="modifier-seance-film" required>
+                                    <option value="">Sélectionner un film</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="modifier-seance-salle" class="form-label">Salle</label>
+                                <select class="form-select" id="modifier-seance-salle" required>
+                                    <option value="">Sélectionner une salle</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="modifier-seance-date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="modifier-seance-date" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="modifier-seance-heure" class="form-label">Heure</label>
+                                <input type="time" class="form-control" id="modifier-seance-heure" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="modifier-seance-version" class="form-label">Version de diffusion</label>
+                                <select class="form-select" id="modifier-seance-version" required>
+                                    <option value="">Sélectionner une version</option>
+                                    <option value="VF">Version Française</option>
+                                    <option value="VOST">Version Sous-Titrée</option>
+                                    <option value="VO">Version Originale</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-primary" id="save-seance-modifier-btn">Modifier</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Modal: Confirmation de Suppression -->
+     <div class="modal fade" id="modal-confirmer-suppression-seance" tabindex="-1" aria-labelledby="modal-confirmer-suppression-seance-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modal-confirmer-suppression-seance-label">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmer la suppression
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir supprimer cette séance ?</p>
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle me-2"></i>Cette action est irréversible et supprimera définitivement la séance.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i>Annuler
+                    </button>
+                    <button type="button" id="btn-confirmer-suppression-seance" class="btn btn-danger">
+                        <i class="bi bi-trash me-2"></i>Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="seances.js"></script>
+</body>
+</html>

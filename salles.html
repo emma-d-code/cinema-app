@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salles - Admin</title>
+    <link rel="stylesheet" href="admin_dashboard.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .salles-table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            margin-bottom: 1rem;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            color: black;
+        }
+
+        .salles-table thead {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .salles-table th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: black;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .salles-table td {
+            padding: 12px 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #dee2e6;
+            transition: background-color 0.3s ease;
+            color: black;
+        }
+
+        /* Modal Styles */
+        .modal-dialog {
+            max-width: 800px;
+        }
+
+        .modal-content {
+            background-color: black;
+            border: 2px solid #dc3545;
+            border-radius: 15px;
+        }
+
+        .modal-header {
+            background-color: black;
+            color: white;
+            border-bottom: 1px solid #dc3545;
+            padding: 15px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .modal-header .modal-title {
+            color: white;
+            font-weight: bold;
+        }
+
+        .modal-header .btn-close {
+            background-color: white;
+            opacity: 1;
+        }
+
+        .modal-body {
+            background-color: black;
+            color: white;
+            padding: 15px;
+        }
+
+        .modal-footer {
+            background-color: black;
+            border-top: 1px solid #dc3545;
+            padding: 15px;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        .modal-footer .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .modal-footer .btn-primary,
+        .modal-footer .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        /* Ajustements pour les formulaires dans les modales */
+        .modal .form-control,
+        .modal .form-select {
+            background-color: #1a1a1a;
+            color: white;
+            border: 1px solid #dc3545;
+        }
+
+        .modal .form-label {
+            color: white;
+        }
+
+        .add-salle-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #db1313;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-weight: 500;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-salle-btn i {
+            font-size: 1.2em;
+        }
+
+        .add-salle-btn:hover {
+            background-color: #2b2188;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .table-actions .btn {
+            margin-right: 0;
+            padding: 4px 8px;
+            font-size: 0.8em;
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .table-actions .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .table-actions .btn-warning {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .table-actions .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons .btn {
+            margin-right: 0;
+            padding: 4px 8px;
+            font-size: 0.8em;
+        }
+
+        .action-buttons .btn-info {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            color: white;
+        }
+
+        .action-buttons .btn-warning {
+            background-color: rgb(62, 141, 22);
+            border-color: rgb(62, 141, 22);
+            color: white;
+        }
+
+        .action-buttons .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .action-buttons .btn-outline-success {
+            background-color: transparent;
+            border-color: #28a745;
+            color: #28a745;
+        }
+
+        .action-buttons .btn-success {
+            background-color: rgb(62, 141, 22);
+            border-color: rgb(62, 141, 22);
+            color: white;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-left h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: #f80505;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-content">
+                <div class="sidebar-logo">
+                    <img src="logo.png" alt="Logo">
+                </div>
+                <nav>
+                    <ul>
+                        <li>
+                            <a href="admin_dashboard.html">
+                                <i class="bi bi-speedometer2"></i>
+                                <span>Tableau de Bord</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="films.html">
+                                <i class="bi bi-film"></i>
+                                <span>Films</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="reservation.html">
+                                <i class="bi bi-calendar-check"></i>
+                                <span>Réservations</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="seances.html">
+                                <i class="bi bi-clock"></i>
+                                <span>Seances</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="clients.html">
+                                <i class="bi bi-people"></i>
+                                <span>Clients</span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="salles.html">
+                                <i class="bi bi-buildings"></i>
+                                <span>Salles</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="profils.html">
+                                <i class="bi bi-person"></i>
+                                <span>Profile</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="sidebar-footer">
+                    <button onclick="logout()" class="logout-btn">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Déconnexion</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <header>
+                <div class="header-left">
+                    <button class="sidebar-toggle" aria-label="Toggle Sidebar">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <h1>Salles</h1>
+                </div>
+                <div class="header-right">
+                    <button id="btn-add-salle" class="add-salle-btn" data-bs-toggle="modal" data-bs-target="#ajouterSalleModal">
+                        <i class="bi bi-plus"></i> Ajouter
+                    </button>
+                </div>
+            </header>
+
+            <div class="container-fluid">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" id="search-salle" class="form-control" placeholder="Rechercher une salle...">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <select id="filter-type" class="form-select">
+                            <option value="">Tous les types</option>
+                            <option value="STANDARD">Standard</option>
+                            <option value="3D">3D</option>
+                            <option value="IMAX">IMAX</option>
+                            <option value="VIP">VIP</option>
+                            <option value="4DX">4DX</option>
+                            <option value="PREMIUM">Premium</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table salles-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Type</th>
+                                <th>Capacité</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sallesTableBody">
+                            <!-- Les salles seront ajoutées dynamiquement ici -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajout de Salle -->
+    <div class="modal fade" id="ajouterSalleModal" tabindex="-1" aria-labelledby="ajouterSalleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ajouterSalleModalLabel">Ajouter une Salle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-ajouter-salle" name="form-ajouter-salle">
+                        <div class="mb-3">
+                            <label for="salle-nom-ajouter" class="form-label">Nom de la Salle</label>
+                            <input type="text" class="form-control" id="salle-nom-ajouter" name="salle-nom-ajouter" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="salle-type-ajouter" class="form-label">Type de Salle</label>
+                            <select class="form-select" id="salle-type-ajouter" name="salle-type-ajouter" required>
+                                <option value="">Sélectionner un type</option>
+                                <option value="STANDARD">Standard</option>
+                                <option value="3D">3D</option>
+                                <option value="IMAX">IMAX</option>
+                                <option value="VIP">VIP</option>
+                                <option value="4DX">4DX</option>
+                                <option value="PREMIUM">Premium</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="salle-capacite-ajouter" class="form-label">Capacité</label>
+                            <input type="number" class="form-control" id="salle-capacite-ajouter" name="salle-capacite-ajouter" min="1" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-primary">Ajouter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Modifier Salle -->
+    <div class="modal fade" id="modifierSalleModal" tabindex="-1" aria-labelledby="modifierSalleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modifierSalleModalLabel">Modifier une Salle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-modifier-salle" name="form-modifier-salle">
+                        <div class="mb-3">
+                            <label for="salle-nom-modifier" class="form-label">Nom de la Salle</label>
+                            <input type="text" class="form-control" id="salle-nom-modifier" name="salle-nom-modifier" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="salle-type-modifier" class="form-label">Type de Salle</label>
+                            <select class="form-select" id="salle-type-modifier" name="salle-type-modifier" required>
+                                <option value="">Sélectionner un type</option>
+                                <option value="STANDARD">Standard</option>
+                                <option value="3D">3D</option>
+                                <option value="IMAX">IMAX</option>
+                                <option value="VIP">VIP</option>
+                                <option value="4DX">4DX</option>
+                                <option value="PREMIUM">Premium</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="salle-capacite-modifier" class="form-label">Capacité</label>
+                            <input type="number" class="form-control" id="salle-capacite-modifier" name="salle-capacite-modifier" min="1" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmation de Suppression -->
+    <div class="modal fade" id="deleteSalleModal" tabindex="-1" aria-labelledby="deleteSalleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger" id="deleteSalleModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmation de Suppression
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Voulez-vous vraiment supprimer la salle <span id="salle-nom-suppression" class="fw-bold text-danger"></span> ?</p>
+                    <div class="alert alert-warning" role="alert">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        Cette action est irréversible et supprimera définitivement la salle.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmerSuppression()">
+                        <i class="bi bi-trash me-2"></i>Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS et dépendances -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script de gestion des salles -->
+    <script src="salles.js"></script>
+    <script>
+        // Fonction pour ajouter une salle
+        function ajouterSalle(event) {
+            event.preventDefault();
+
+            const nom = document.getElementById('salle-nom-ajouter').value;
+            const type = document.getElementById('salle-type-ajouter').value;
+            const capacite = document.getElementById('salle-capacite-ajouter').value;
+
+            // Générer un ID unique
+            const id = `salle_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+            let salles = JSON.parse(localStorage.getItem('salles') || '[]');
+            
+            // Ajouter l'ID à l'objet salle
+            salles.push({ id, nom, type, capacite });
+            localStorage.setItem('salles', JSON.stringify(salles));
+            
+            // Fermer le modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('ajouterSalleModal'));
+            if (modal) {
+                modal.hide();
+            }
+            
+            // Recharger la page ou mettre à jour la liste
+            location.reload();
+        }
+
+        // Fonction pour ouvrir le modal d'édition
+        function ouvrirModalEdition(nom, type, capacite) {
+            // Sélectionner les éléments du modal
+            const nomInput = document.getElementById('salle-nom-modifier');
+            const typeSelect = document.getElementById('salle-type-modifier');
+            const capaciteInput = document.getElementById('salle-capacite-modifier');
+
+            // Vérifier que tous les éléments existent
+            if (!nomInput || !typeSelect || !capaciteInput) {
+                console.error('Impossible de trouver les éléments du formulaire');
+                return;
+            }
+
+            // Remplir les champs du formulaire
+            nomInput.value = nom;
+            nomInput.readOnly = true; // Empêcher la modification du nom
+            typeSelect.value = type;
+            capaciteInput.value = capacite;
+
+            // Créer et afficher le modal
+            const modalElement = document.getElementById('modifierSalleModal');
+            if (!modalElement) {
+                console.error('Impossible de trouver le modal');
+                return;
+            }
+
+            // Utiliser Bootstrap pour afficher le modal
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
+
+        // Fonction pour modifier une salle
+        function modifierSalle(event) {
+            // Empêcher le comportement par défaut du formulaire
+            if (event) {
+                event.preventDefault();
+            }
+
+            // Récupérer les valeurs du formulaire
+            const nomInput = document.getElementById('salle-nom-modifier');
+            const typeInput = document.getElementById('salle-type-modifier');
+            const capaciteInput = document.getElementById('salle-capacite-modifier');
+
+            // Vérifier que tous les champs sont remplis
+            if (!nomInput || !typeInput || !capaciteInput) {
+                console.error('Un ou plusieurs champs du formulaire sont introuvables');
+                return;
+            }
+
+            const nom = nomInput.value.trim();
+            const type = typeInput.value.trim();
+            const capacite = capaciteInput.value.trim();
+
+            // Validation des champs
+            if (!nom || !type || !capacite) {
+                console.warn('Veuillez remplir tous les champs');
+                return;
+            }
+
+            // Récupérer les salles depuis localStorage
+            let salles = JSON.parse(localStorage.getItem('salles') || '[]');
+            
+            // Trouver l'index de la salle à modifier
+            const salleIndex = salles.findIndex(salle => salle.nom === nom);
+            
+            if (salleIndex === -1) {
+                console.error(`Aucune salle trouvée avec le nom ${nom}`);
+                return;
+            }
+
+            // Mettre à jour la salle
+            salles[salleIndex] = { 
+                id: salles[salleIndex].id || `salle_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, 
+                nom, 
+                type, 
+                capacite: parseInt(capacite, 10)
+            };
+
+            try {
+                // Sauvegarder les modifications dans localStorage
+                localStorage.setItem('salles', JSON.stringify(salles));
+                
+                // Fermer le modal
+                const modalElement = document.getElementById('modifierSalleModal');
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                if (modal) {
+                    modal.hide();
+                }
+                
+                // Recharger la page ou mettre à jour la liste
+                location.reload();
+            } catch (error) {
+                console.error('Erreur lors de la sauvegarde :', error);
+            }
+        }
+
+        // Fonction pour préparer la suppression
+        function preparerSuppression(id) {
+            // Trouver la salle par son ID
+            const salles = JSON.parse(localStorage.getItem('salles') || '[]');
+            const salle = salles.find(s => s.id === id);
+            
+            if (!salle) {
+                console.error('Salle non trouvée');
+                return;
+            }
+
+            // Remplir le modal de suppression
+            const nomSuppression = document.getElementById('salle-nom-suppression');
+            if (nomSuppression) {
+                nomSuppression.textContent = salle.nom;
+            }
+
+            // Stocker l'ID de la salle à supprimer
+            document.getElementById('deleteSalleModal').dataset.salleId = id;
+
+            // Afficher le modal
+            const modalElement = document.getElementById('deleteSalleModal');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
+
+        // Fonction pour confirmer la suppression
+        function confirmerSuppression() {
+            // Récupérer l'ID de la salle à supprimer
+            const modalElement = document.getElementById('deleteSalleModal');
+            const salleId = modalElement.dataset.salleId;
+
+            if (!salleId) {
+                console.error('Aucune salle sélectionnée pour la suppression');
+                return;
+            }
+
+            // Récupérer et filtrer les salles
+            let salles = JSON.parse(localStorage.getItem('salles') || '[]');
+            const sallesFiltrees = salles.filter(salle => salle.id !== salleId);
+
+            // Mettre à jour localStorage
+            localStorage.setItem('salles', JSON.stringify(sallesFiltrees));
+
+            // Fermer le modal
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            }
+
+            // Recharger la liste des salles
+            afficherSalles();
+
+            console.log('Salle supprimée avec succès !');
+        }
+
+        // Fonction pour afficher les salles
+        function afficherSalles() {
+            const salles = JSON.parse(localStorage.getItem('salles') || '[]');
+            const tableBody = document.querySelector('#sallesTableBody');
+            
+            tableBody.innerHTML = '';
+
+            salles.forEach((salle, index) => {
+                // Générer un ID si absent
+                if (!salle.id) {
+                    salle.id = `salle_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                }
+
+                const row = `
+                    <tr data-salle-id="${salle.id}">
+                        <td>${index + 1}</td>
+                        <td>${salle.nom}</td>
+                        <td>${salle.type}</td>
+                        <td>${salle.capacite}</td>
+                        <td>
+                            <div class="action-buttons gap-2 d-flex">
+                                <button class="btn btn-sm btn-success" onclick="ouvrirModalEdition('${salle.nom}', '${salle.type}', '${salle.capacite}')">
+                                    Éditer
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="preparerSuppression('${salle.id}')">
+                                    Supprimer
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+
+            // Mettre à jour localStorage avec les IDs générés
+            localStorage.setItem('salles', JSON.stringify(salles));
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ajouter les écouteurs d'événements
+            document.getElementById('form-ajouter-salle').addEventListener('submit', ajouterSalle);
+            document.getElementById('form-modifier-salle').addEventListener('submit', modifierSalle);
+
+            // Log pour comprendre ce qui se passe
+            console.warn('Contenu initial du localStorage:', localStorage.getItem('salles'));
+
+            // Commentez cette ligne si vous ne voulez pas vider le localStorage
+            // localStorage.setItem('salles', JSON.stringify([]));
+
+            // Afficher les salles au chargement
+            afficherSalles();
+        });
+
+        // Débogage supplémentaire
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DEBUG - Page des salles chargée');
+            
+            // Vérifier l'existence des éléments
+            const tableBody = document.getElementById('sallesTableBody');
+            const searchInput = document.getElementById('search-salle');
+            const typeFilter = document.getElementById('filter-type');
+            const addSalleBtn = document.getElementById('btn-add-salle');
+
+            console.log('DEBUG - Éléments de la page :', {
+                tableBody: !!tableBody,
+                searchInput: !!searchInput,
+                typeFilter: !!typeFilter,
+                addSalleBtn: !!addSalleBtn
+            });
+
+            // Vérifier le localStorage
+            const sallesStockees = localStorage.getItem('salles');
+            console.log('DEBUG - Salles stockées:', sallesStockees);
+
+            // Vérifier l'objet salleManager
+            if (window.salleManager) {
+                console.log('DEBUG - Salles dans salleManager:', window.salleManager.salles);
+            } else {
+                console.error('DEBUG - salleManager non initialisé');
+            }
+        });
+    </script>
+</body>
+</html>

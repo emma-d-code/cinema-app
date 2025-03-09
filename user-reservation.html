@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservation - CinéMa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #dc3545;
+            --secondary-color: #1a1a1a;
+        }
+
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            padding-top: 70px; 
+        }
+
+        .reservation-container {
+            display: flex;
+            margin-left: 300px; /* Space for sidebar */
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 300px;
+            height: calc(100vh - 70px);
+            border-right: 10px solid var(--primary-color);
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+            background-color: var(--secondary-color);
+        }
+
+        .sidebar-nav {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-nav-btn {
+            display: block;
+            width: 100%;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+            text-align: left;
+            transition: all 0.3s ease;
+            background-color: transparent;
+            color: white;
+        }
+
+        .sidebar-nav-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .sidebar-nav-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .reservation-section {
+            display: none; /* Hide all sections by default */
+        }
+
+        .reservation-section.active {
+            display: block; /* Show active section */
+        }
+
+        .sidebar-section {
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .sidebar-section .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .sidebar-section .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            align-items: center;
+        }
+
+        .sidebar-section .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-section .detail-label {
+            color: var(--primary-color);
+            font-weight: bold;
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+
+        .sidebar-section .detail-value {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .seat-selection-container {
+            border-radius: 15px;
+            padding: 20px;
+            background-color: var(--secondary-color);
+            border-left: 10px solid var(--primary-color);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .seat-map-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            max-width: 100%;
+            margin: 0 auto;
+            overflow-x: auto;
+        }
+
+        .seat-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .seat-row-label {
+            font-weight: bold;
+            margin-right: 5px;
+            width: 20px;
+            text-align: right;
+            font-size: 0.8rem;
+        }
+
+        .seat {
+            width: 25px;
+            height: 25px;
+            margin: 0;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 0;
+        }
+
+        .seat:hover {
+            transform: scale(1.1);
+        }
+
+        .seat.selected {
+            background-color: var(--primary-color);
+        }
+
+        .seat.occupied {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .screen-indicator {
+            width: 80%;
+            height: 8px;
+            margin: 0 auto 15px;
+            border-radius: 5px;
+            text-align: center;
+            color: white;
+            line-height: 8px;
+            font-size: 8px;
+        }
+
+        .seat-legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .seat-legend-item {
+            display: flex;
+            align-items: center;
+            margin: 0 10px;
+        }
+
+        .seat-legend-item .seat {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+
+        .ticket-categories-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .ticket-category-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            background-color: var(--secondary-color);
+            border-left: 10px solid var(--primary-color);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .ticket-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .ticket-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .ticket-category-item h5 {
+            color: white;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .ticket-price {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .ticket-quantity {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ticket-quantity label {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .ticket-quantity input {
+            width: 150px;
+            text-align: center;
+        }
+
+        .supplement-item, .supplement-item input {
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            background-color: var(--secondary-color);
+            border-left: 10px solid var(--primary-color);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .supplement-item input {
+            margin-right: 10px;
+        }
+
+        .supplement-options .form-check {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+
+        .supplement-options .form-check:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .supplement-options .form-check-input {
+            margin-right: 10px;
+        }
+
+        .supplement-options .form-check-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .total-price-section {
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .total-price-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .total-price-item:last-child {
+            border-bottom: none;
+        }
+
+        .total-price-label {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .reservation-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .btn-navigation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-navigation:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-prev {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-next {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-navigation i {
+            font-size: 1rem;
+        }
+
+        .btn-primary, .btn-navigation {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover, .btn-navigation:hover {
+            background-color: #a71d2a;
+            border-color: #a71d2a;
+            transform: scale(1.05);
+        }
+
+        .navbar {
+            background-color: var(--secondary-color) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .navbar .nav-link {
+            color: white !important;
+            transition: color 0.3s ease;
+        }
+
+        .navbar .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .navbar .nav-link.active {
+            color: var(--primary-color) !important;
+            font-weight: bold;
+        }
+
+        .navbar-brand {
+            color: var(--primary-color) !important;
+        }
+
+        footer {
+            background-color: var(--secondary-color);
+            border-top: 2px solid var(--primary-color);
+        }
+
+        @media (max-width: 992px) {
+            .reservation-container {
+                margin-left: 0;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                margin-bottom: 20px;
+            }
+        }
+
+        .session-info-container {
+            border: 2px solid rgba(0, 123, 255, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .session-info-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .session-info-header img {
+            max-width: 150px;
+            margin-right: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .session-info-details {
+            flex-grow: 1;
+        }
+
+        .session-info-details h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .session-detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .session-detail-item .label {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .session-detail-item .value {
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .session-info-footer {
+            margin-top: 20px;
+            text-align: center;
+            font-style: italic;
+            color: #6c757d;
+        }
+
+        /* Supplements Section Styling */
+        .supplements-section {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .supplements-section h3 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .supplement-card {
+            border: none;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .supplement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .supplement-card .card-body {
+            padding: 20px;
+        }
+
+        .supplement-card .card-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .supplement-card .card-title i {
+            margin-right: 10px;
+            color: var(--primary-color);
+            font-size: 1.5em;
+            vertical-align: middle;
+        }
+
+        .supplement-options .form-check {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+
+        .supplement-options .form-check:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .supplement-options .form-check-input {
+            margin-right: 10px;
+        }
+
+        .supplement-options .form-check-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .supplements-total {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1em;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #supplements-error {
+            text-align: center;
+            font-weight: 500;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .supplements-section {
+                padding: 15px;
+            }
+
+            .supplement-card {
+                margin-bottom: 15px;
+            }
+
+            .supplement-card .card-img-top {
+                height: 150px;
+            }
+        }
+
+        /* Payment Section Styling */
+        .payment-section {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .payment-card, .ticket-preview-card {
+            border: none;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .payment-card .card-title,
+        .ticket-preview-card .card-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .payment-card .input-group-text {
+            background-color: transparent;
+            border: none;
+        }
+
+        .payment-card .input-group-text i {
+            font-size: 1.5em;
+            margin: 0 5px;
+            color: #6c757d;
+        }
+
+        .ticket-preview {
+            background-color: #fff;
+            border: 2px dashed #dee2e6 !important;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #payment-error {
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .reservation-navigation .btn {
+            min-width: 150px;
+        }
+
+        @media (max-width: 768px) {
+            .payment-section {
+                padding: 15px;
+            }
+        }
+
+        .payment-method-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .payment-method-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-form input {
+            border-color: var(--primary-color);
+        }
+
+        #payment-error {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .ticket-category-card .detail-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 5px;
+            background-color: rgba(220, 53, 69, 0.1);
+            border-radius: 5px;
+        }
+
+        .ticket-category-card .price-label {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .ticket-category-card .price-value {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">CinéMa</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="user-seance.html">Séances</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="user-reservation.html">Réservation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Mon Compte</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-section">
+            <h3 class="section-title">Détails de la Séance</h3>
+            <div id="session-details-container">
+                <div class="detail-item">
+                    <span class="detail-label">Film</span>
+                    <span class="detail-value" id="session-movie-title">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Date</span>
+                    <span class="detail-value" id="session-movie-date">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Heure</span>
+                    <span class="detail-value" id="session-movie-time">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Salle</span>
+                    <span class="detail-value" id="session-movie-room">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Version</span>
+                    <span class="detail-value" id="session-movie-version">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-nav">
+            <button class="sidebar-nav-btn active" data-step="seat-selection">
+                <i class="fas fa-chair"></i> Sélection des Sièges
+            </button>
+            <button class="sidebar-nav-btn" data-step="ticket-categories">
+                <i class="fas fa-ticket-alt"></i> Catégories de Prix
+            </button>
+            <button class="sidebar-nav-btn" data-step="payment">
+                <i class="fas fa-credit-card"></i> Paiement
+            </button>
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <div class="reservation-container">
+            <!-- Seat Selection Section -->
+            <div class="reservation-section active" id="seat-selection">
+                <div class="container">
+                    <div class="seat-selection-container">
+                        <h3 class="text-center mb-4" style="color: var(--primary-color)">Sélection des Sièges</h3>
+                        <div class="seat-map-grid" id="seat-map"></div>
+                        <div class="screen-indicator bg-secondary mb-3">Écran</div>
+                        <div class="seat-legend">
+                            <div class="seat-legend-item">
+                                <div class="seat bg-secondary"></div> Disponible
+                            </div>
+                            <div class="seat-legend-item">
+                                <div class="seat bg-danger"></div> Sélectionné
+                            </div>
+                            <div class="seat-legend-item">
+                                <div class="seat bg-dark text-muted"></div> Occupé
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-primary" onclick="goToNextStep()">Suivant</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ticket Categories Section -->
+            <div class="reservation-section" id="ticket-categories">
+                <div class="container">
+                    <div class="ticket-categories-container">
+                        <h3 class="text-center mb-4" style="color: var(--primary-color)">Catégories de Prix</h3>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="card ticket-category-card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Plein Tarif</h5>
+                                        <p class="card-text">Prix standard</p>
+                                        <div class="detail-price">
+                                            <span class="price-label">Prix:</span>
+                                            <span class="price-value">60 MAD</span>
+                                        </div>
+                                        <div class="input-group mt-2">
+                                            <span class="input-group-text">Quantité</span>
+                                            <input type="number" class="form-control ticket-quantity" min="0" value="0" data-price="60">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card ticket-category-card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Tarif Étudiant</h5>
+                                        <p class="card-text">Étudiants</p>
+                                        <div class="detail-price">
+                                            <span class="price-label">Prix:</span>
+                                            <span class="price-value">50 MAD</span>
+                                        </div>
+                                        <div class="input-group mt-2">
+                                            <span class="input-group-text">Quantité</span>
+                                            <input type="number" class="form-control ticket-quantity" min="0" value="0" data-price="50">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card ticket-category-card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Tarif Senior</h5>
+                                        <p class="card-text">Plus de 60 ans</p>
+                                        <div class="detail-price">
+                                            <span class="price-label">Prix:</span>
+                                            <span class="price-value">55 MAD</span>
+                                        </div>
+                                        <div class="input-group mt-2">
+                                            <span class="input-group-text">Quantité</span>
+                                            <input type="number" class="form-control ticket-quantity" min="0" value="0" data-price="55">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card ticket-category-card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Tarif Enfant</h5>
+                                        <p class="card-text">Moins de 12 ans</p>
+                                        <div class="detail-price">
+                                            <span class="price-label">Prix:</span>
+                                            <span class="price-value">40 MAD</span>
+                                        </div>
+                                        <div class="input-group mt-2">
+                                            <span class="input-group-text">Quantité</span>
+                                            <input type="number" class="form-control ticket-quantity" min="0" value="0" data-price="40">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-secondary me-2" onclick="goToPreviousStep()">Précédent</button>
+                            <button class="btn btn-primary" onclick="goToNextStep()">Suivant</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Section -->
+            <div class="reservation-section" id="payment">
+                <div class="container">
+                    <h3 class="text-center mb-4" style="color: var(--primary-color)">Paiement</h3>
+                    <div class="row">
+                        <div class="col-md-6 offset-md-3">
+                            <div class="card payment-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Détails de Paiement</h5>
+                                    <form id="payment-form">
+                                        <div class="mb-3">
+                                            <label for="card-number" class="form-label">Numéro de Carte</label>
+                                            <input type="text" class="form-control" id="card-number" placeholder="1234 5678 9012 3456" required>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="card-expiry" class="form-label">Date d'Expiration</label>
+                                                    <input type="text" class="form-control" id="card-expiry" placeholder="MM/AA" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="card-cvv" class="form-label">CVV</label>
+                                                    <input type="text" class="form-control" id="card-cvv" placeholder="123" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="total-price" class="form-label">Total à Payer</label>
+                                            <input type="text" class="form-control" id="total-price" readonly>
+                                        </div>
+                                        <div class="text-center">
+                                            <button class="btn btn-secondary me-2" onclick="goToPreviousStep()">Précédent</button>
+                                            <button type="submit" class="btn btn-success">Confirmer le Paiement</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-white text-center py-4">
+        <div class="container">
+            <p>&copy; 2025 CinéMa. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <!-- Ticket Preview Modal -->
+    <div class="modal fade" id="ticketPreviewModal" tabindex="-1" aria-labelledby="ticketPreviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ticketPreviewModalLabel">Aperçu du Ticket</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="ticket-preview-content">
+                    <div class="ticket-preview-container" style="border: 2px solid #dc3545; padding: 20px; text-align: center;">
+                        <h2 style="color: #dc3545;">CinéMa - Ticket de Réservation</h2>
+                        <div id="ticket-details">
+                            <p><strong>Film:</strong> <span id="ticket-movie-title">-</span></p>
+                            <p><strong>Date:</strong> <span id="ticket-movie-date">-</span></p>
+                            <p><strong>Heure:</strong> <span id="ticket-movie-time">-</span></p>
+                            <p><strong>Salle:</strong> <span id="ticket-movie-room">-</span></p>
+                            <p><strong>Sièges:</strong> <span id="ticket-selected-seats">-</span></p>
+                            <div id="ticket-price-breakdown">
+                                <h4>Détail des Billets</h4>
+                                <div id="ticket-categories-list"></div>
+                                <p><strong>Total:</strong> <span id="ticket-total-price">-</span> MAD</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-primary" onclick="generatePDFTicket()">Télécharger PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        function goToNextStep() {
+            const currentSection = document.querySelector('.reservation-section.active');
+            const currentSectionId = currentSection.id;
+            const sidebarNavButtons = document.querySelectorAll('.sidebar-nav-btn');
+            
+            // Validate current step before proceeding
+            if (!validateCurrentStep(currentSectionId)) {
+                return;
+            }
+            
+            // Hide current section
+            currentSection.classList.remove('active');
+            
+            // Update sidebar navigation
+            sidebarNavButtons.forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('data-step') === getNextStep(currentSectionId)) {
+                    button.classList.add('active');
+                }
+            });
+            
+            // Show next section
+            const nextSection = document.getElementById(getNextStep(currentSectionId));
+            nextSection.classList.add('active');
+            
+            // Update total price for payment section
+            if (nextSection.id === 'payment') {
+                updateTotalPrice();
+            }
+        }
+        
+        function goToPreviousStep() {
+            const currentSection = document.querySelector('.reservation-section.active');
+            const currentSectionId = currentSection.id;
+            const sidebarNavButtons = document.querySelectorAll('.sidebar-nav-btn');
+            
+            // Hide current section
+            currentSection.classList.remove('active');
+            
+            // Update sidebar navigation
+            sidebarNavButtons.forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('data-step') === getPreviousStep(currentSectionId)) {
+                    button.classList.add('active');
+                }
+            });
+            
+            // Show previous section
+            const previousSection = document.getElementById(getPreviousStep(currentSectionId));
+            previousSection.classList.add('active');
+        }
+        
+        function getNextStep(currentStep) {
+            switch(currentStep) {
+                case 'seat-selection': return 'ticket-categories';
+                case 'ticket-categories': return 'payment';
+                case 'payment': return 'payment';
+                default: return 'seat-selection';
+            }
+        }
+        
+        function getPreviousStep(currentStep) {
+            switch(currentStep) {
+                case 'seat-selection': return 'seat-selection';
+                case 'ticket-categories': return 'seat-selection';
+                case 'payment': return 'ticket-categories';
+                default: return 'seat-selection';
+            }
+        }
+        
+        function validateCurrentStep(stepId) {
+            switch(stepId) {
+                case 'seat-selection':
+                    // Ensure at least one seat is selected
+                    const selectedSeats = document.querySelectorAll('.seat.selected');
+                    if (selectedSeats.length === 0) {
+                        alert('Veuillez sélectionner au moins un siège.');
+                        return false;
+                    }
+                    return true;
+                
+                case 'ticket-categories':
+                    // Ensure ticket quantity matches selected seats
+                    const ticketQuantities = document.querySelectorAll('.ticket-quantity');
+                    const selectedSeatsCount = document.querySelectorAll('.seat.selected').length;
+                    const totalTickets = Array.from(ticketQuantities).reduce((sum, input) => sum + parseInt(input.value || 0), 0);
+                    
+                    if (totalTickets !== selectedSeatsCount) {
+                        alert(`Vous devez sélectionner ${selectedSeatsCount} billets pour correspondre à vos sièges.`);
+                        return false;
+                    }
+                    return true;
+                
+                case 'payment':
+                    // Validate payment form
+                    const cardNumber = document.getElementById('card-number').value;
+                    const cardExpiry = document.getElementById('card-expiry').value;
+                    const cardCVV = document.getElementById('card-cvv').value;
+                    
+                    if (!cardNumber || !cardExpiry || !cardCVV) {
+                        alert('Veuillez remplir tous les champs de paiement.');
+                        return false;
+                    }
+                    return true;
+                
+                default:
+                    return true;
+            }
+        }
+        
+        function updateTotalPrice() {
+            // Calculate ticket prices
+            const ticketInputs = document.querySelectorAll('.ticket-quantity');
+            let totalPrice = 0;
+            
+            ticketInputs.forEach(input => {
+                const price = parseFloat(input.getAttribute('data-price'));
+                const quantity = parseInt(input.value || 0);
+                totalPrice += price * quantity;
+            });
+            
+            // Update total price input
+            const totalPriceInput = document.getElementById('total-price');
+            totalPriceInput.value = `${totalPrice} MAD`;
+        }
+        
+        // Function to retrieve session details from URL
+        function getSessionDetailsFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            return {
+                titre: urlParams.get('titre') || urlParams.get('film') || '-',
+                date: urlParams.get('date') || '-',
+                heure: urlParams.get('heure') || '-',
+                salle: urlParams.get('salle') || '-',
+                version: urlParams.get('version') || '-'
+            };
+        }
+
+        // Function to display session details in sidebar
+        function displaySessionDetails() {
+            const sessionDetails = getSessionDetailsFromURL();
+            
+            document.getElementById('session-movie-title').textContent = sessionDetails.titre;
+            document.getElementById('session-movie-date').textContent = sessionDetails.date;
+            document.getElementById('session-movie-time').textContent = sessionDetails.heure;
+            document.getElementById('session-movie-room').textContent = sessionDetails.salle;
+            document.getElementById('session-movie-version').textContent = sessionDetails.version;
+        }
+
+        // Payment form submission
+        document.getElementById('payment-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Prepare ticket details
+            const sessionDetails = getSessionDetailsFromURL();
+            const selectedSeats = Array.from(document.querySelectorAll('.seat.selected'))
+                .map(seat => `${seat.closest('.seat-row').querySelector('.seat-row-label').textContent}${seat.textContent}`)
+                .join(', ');
+            
+            // Calculate ticket categories and prices
+            const ticketCategories = [];
+            let totalPrice = 0;
+            document.querySelectorAll('.ticket-quantity').forEach(input => {
+                const quantity = parseInt(input.value || 0);
+                const price = parseFloat(input.getAttribute('data-price'));
+                const categoryName = input.closest('.card-body').querySelector('.card-title').textContent;
+                
+                if (quantity > 0) {
+                    ticketCategories.push(`${categoryName}: ${quantity} x ${price} MAD`);
+                    totalPrice += quantity * price;
+                }
+            });
+            
+            // Populate ticket preview modal
+            document.getElementById('ticket-movie-title').textContent = sessionDetails.titre;
+            document.getElementById('ticket-movie-date').textContent = sessionDetails.date;
+            document.getElementById('ticket-movie-time').textContent = sessionDetails.heure;
+            document.getElementById('ticket-movie-room').textContent = sessionDetails.salle;
+            document.getElementById('ticket-selected-seats').textContent = selectedSeats;
+            
+            // Populate ticket categories
+            const categoriesList = document.getElementById('ticket-categories-list');
+            categoriesList.innerHTML = ticketCategories.map(cat => `<p>${cat}</p>`).join('');
+            document.getElementById('ticket-total-price').textContent = totalPrice;
+            
+            // Show ticket preview modal
+            const ticketPreviewModal = new bootstrap.Modal(document.getElementById('ticketPreviewModal'));
+            ticketPreviewModal.show();
+        });
+
+        // Generate PDF Ticket
+        function generatePDFTicket() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a6'
+            });
+
+            // Create a custom ticket design
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+
+            // Background and border
+            doc.setDrawColor(220, 53, 69);  // Primary color border
+            doc.setLineWidth(2);
+            doc.rect(10, 10, pageWidth - 20, pageHeight - 20);
+
+            // Header
+            doc.setFontSize(16);
+            doc.setTextColor(220, 53, 69);
+            doc.text('CinéMa - Ticket de Réservation', pageWidth / 2, 25, { align: 'center' });
+
+            // Session Details
+            const sessionDetails = getSessionDetailsFromURL();
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            
+            const details = [
+                `Film: ${sessionDetails.titre}`,
+                `Date: ${sessionDetails.date}`,
+                `Heure: ${sessionDetails.heure}`,
+                `Salle: ${sessionDetails.salle}`
+            ];
+
+            let yPosition = 40;
+            details.forEach(detail => {
+                doc.text(detail, 20, yPosition);
+                yPosition += 10;
+            });
+
+            // Seats
+            const selectedSeats = Array.from(document.querySelectorAll('.seat.selected'))
+                .map(seat => `${seat.closest('.seat-row').querySelector('.seat-row-label').textContent}${seat.textContent}`)
+                .join(', ');
+            doc.text(`Sièges: ${selectedSeats}`, 20, yPosition);
+            yPosition += 10;
+
+            // Ticket Categories and Prices
+            doc.setFontSize(10);
+            doc.text('Détail des Billets:', 20, yPosition);
+            yPosition += 7;
+
+            let totalPrice = 0;
+            document.querySelectorAll('.ticket-quantity').forEach(input => {
+                const quantity = parseInt(input.value || 0);
+                const price = parseFloat(input.getAttribute('data-price'));
+                const categoryName = input.closest('.card-body').querySelector('.card-title').textContent;
+                
+                if (quantity > 0) {
+                    const lineTotal = quantity * price;
+                    totalPrice += lineTotal;
+                    doc.text(`${categoryName}: ${quantity} x ${price} MAD = ${lineTotal} MAD`, 25, yPosition);
+                    yPosition += 7;
+                }
+            });
+
+            // Total Price
+            doc.setFontSize(12);
+            doc.setTextColor(220, 53, 69);
+            doc.text(`Total: ${totalPrice} MAD`, 20, yPosition + 10);
+
+            // QR Code (Placeholder)
+            doc.setFontSize(8);
+            doc.setTextColor(100, 100, 100);
+            doc.text('Numéro de Réservation: ' + Math.random().toString(36).substr(2, 9).toUpperCase(), 20, pageHeight - 20);
+
+            // Save PDF
+            doc.save(`Ticket_${sessionDetails.titre}_${new Date().toISOString().split('T')[0]}.pdf`);
+        }
+
+        // Initialize seat map
+        function createSeatMap(rows = 10, seatsPerRow = 10) {
+            const seatMap = document.getElementById('seat-map');
+            seatMap.innerHTML = ''; // Clear existing seats
+            
+            for (let row = 0; row < rows; row++) {
+                const rowElement = document.createElement('div');
+                rowElement.classList.add('seat-row');
+                
+                // Add row label
+                const rowLabel = document.createElement('div');
+                rowLabel.classList.add('seat-row-label');
+                rowLabel.textContent = String.fromCharCode(65 + row); // A, B, C, ...
+                rowElement.appendChild(rowLabel);
+                
+                for (let seat = 0; seat < seatsPerRow; seat++) {
+                    const seatBtn = document.createElement('button');
+                    seatBtn.classList.add('seat', 'bg-secondary');
+                    seatBtn.textContent = seat + 1;
+                    seatBtn.addEventListener('click', () => toggleSeat(seatBtn));
+                    
+                    // Randomly mark some seats as occupied
+                    if (Math.random() < 0.2) {
+                        seatBtn.classList.add('occupied');
+                        seatBtn.disabled = true;
+                    }
+                    
+                    rowElement.appendChild(seatBtn);
+                }
+                
+                seatMap.appendChild(rowElement);
+            }
+        }
+        
+        function toggleSeat(seatBtn) {
+            if (seatBtn.classList.contains('occupied')) return;
+            
+            seatBtn.classList.toggle('selected');
+            seatBtn.classList.toggle('bg-danger');
+        }
+        
+        // Initialize reservation when document is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            createSeatMap();
+            displaySessionDetails();
+        });
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</body>
+</html>

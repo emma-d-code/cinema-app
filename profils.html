@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Administrateur</title>
+    <link rel="stylesheet" href="admin_dashboard.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .profile-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 100px);
+            background-color: #f4f6f9;
+        }
+        .profile-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 1100px;
+            position: relative;
+            border: 1px solid #e1e5eb;
+            display: flex;
+            overflow: hidden;
+        }
+        .profile-image-section {
+            width: 35%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            padding: 2rem;
+            position: relative;
+        }
+        .profile-image {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 8px solid white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            margin-bottom: 1.5rem;
+        }
+        .profile-info-section {
+            width: 65%;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+        .edit-profile-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .edit-profile-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+        .editable-field {
+            position: relative;
+        }
+        .edit-icon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            color: #007bff;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .edit-icon:hover {
+            color: #0056b3;
+        }
+        .form-control-plaintext {
+            background-color: transparent;
+            border: none;
+            padding-left: 0;
+        }
+        .password-reset {
+            margin-top: 1rem;
+        }
+        .detail-row {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        .detail-row:hover {
+            background-color: #e9ecef;
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-content">
+                <div class="sidebar-logo">
+                    <img src="logo.png" alt="Logo">
+                </div>
+                <nav>
+                    <ul>
+                        <li>
+                            <i class="bi bi-speedometer2"></i>
+                            <span>Tableau de Bord</span>
+                        </li>
+                        <li>
+                            <a href="films.html">
+                                <i class="bi bi-film"></i>
+                                <span>Films</span>
+                            </a>
+                        </li>
+                        <li>
+                            <i class="bi bi-calendar-check"></i>
+                            <span>Réservations</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-clock"></i>
+                            <span>Seances</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-people"></i>
+                            <span>Clients</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-buildings"></i>
+                            <span>Salles</span>
+                        </li>
+                        <li class="active">
+                            <i class="bi bi-person"></i>
+                            <span>Profile</span>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="sidebar-footer">
+                    <button onclick="logout()" class="logout-btn">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Déconnexion</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <header>
+                <div class="header-left">
+                    <button class="sidebar-toggle" aria-label="Toggle Sidebar">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <h1>Profil</h1>
+                </div>
+            </header>
+
+            <div class="container-fluid profile-container">
+                <div class="profile-card">
+                    <div class="profile-image-section">
+                        <img src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="Photo de Profil" class="profile-image shadow">
+                        <div class="edit-profile-icon">
+                            <i class="bi bi-pencil-fill"></i>
+                        </div>
+                    </div>
+                    <div class="profile-info-section">
+                        <button class="edit-profile-button" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <strong>Nom</strong>
+                                <input type="text" class="form-control-plaintext" id="nomAdmin" value="" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Prénom</strong>
+                                <input type="text" class="form-control-plaintext" id="prenomAdmin" value="" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <strong>Matricule</strong>
+                                <input type="text" class="form-control-plaintext" id="matriculeAdmin" value="" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Rôle</strong>
+                                <input type="text" class="form-control-plaintext" id="roleAdmin" value="" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <strong>Email</strong>
+                                <input type="text" class="form-control-plaintext" id="emailAdmin" value="" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Téléphone</strong>
+                                <input type="text" class="form-control-plaintext" id="telephoneAdmin" value="" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <strong>Dernière Connexion</strong>
+                                <p id="derniereConnexion" class="text-muted"></p>
+                            </div>
+                            <div class="col-md-6 password-reset">
+                                <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#passwordResetModal">
+                                    <i class="bi bi-lock-fill me-2"></i>Réinitialiser Mot de Passe
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Editing Profile -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProfileModalLabel">Modifier le Profil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProfileForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nom</label>
+                                <input type="text" class="form-control" id="editNom" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Prénom</label>
+                                <input type="text" class="form-control" id="editPrenom" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Matricule</label>
+                                <input type="text" class="form-control" id="editMatricule" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Rôle</label>
+                                <select class="form-select" id="editRole" required>
+                                    <option value="Administrateur">Administrateur</option>
+                                    <option value="Gestionnaire">Gestionnaire</option>
+                                    <option value="Superviseur">Superviseur</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editEmail" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Téléphone</label>
+                                <input type="tel" class="form-control" id="editTelephone" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="saveProfileChanges">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Password Reset -->
+    <div class="modal fade" id="passwordResetModal" tabindex="-1" aria-labelledby="passwordResetModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passwordResetModalLabel">Réinitialisation de Mot de Passe</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="passwordResetForm">
+                        <div class="mb-3">
+                            <label class="form-label">Mot de Passe Actuel</label>
+                            <input type="password" class="form-control" id="currentPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nouveau Mot de Passe</label>
+                            <input type="password" class="form-control" id="newPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirmer Nouveau Mot de Passe</label>
+                            <input type="password" class="form-control" id="confirmNewPassword" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="savePasswordChanges">Réinitialiser</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="profils.js"></script>
+</body>
+</html>

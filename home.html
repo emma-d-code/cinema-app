@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CinéMa - Accueil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="user-theme.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #dc3545;
+            --secondary-color: #1a1a1a;
+        }
+
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            padding-top: 70px; 
+        }
+
+        .hero-section {
+            position: relative;
+            background-color: var(--secondary-color);
+            border-bottom: 2px solid var(--primary-color);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-section h1 {
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .hero-section .lead {
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        .films-section {
+            background-color: black;
+            padding: 50px 0;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .film-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        .film-card {
+            background-color: var(--secondary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            color: white;
+        }
+
+        .film-card:hover {
+            transform: scale(1.05);
+        }
+
+        .film-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .film-card .card-body {
+            background-color: var(--secondary-color);
+            border-top: 1px solid var(--primary-color);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .film-card .card-title {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #a71d2a;
+            border-color: #a71d2a;
+        }
+
+        .cta-section {
+            background-color: var(--secondary-color);
+            border-top: 2px solid var(--primary-color);
+            padding: 50px 0;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            color: var(--primary-color);
+        }
+
+        footer {
+            background-color: var(--secondary-color);
+            border-top: 2px solid var(--primary-color);
+        }
+
+        .navbar {
+            background-color: #1a1a1a !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .navbar .nav-link {
+            color: white !important;
+            transition: color 0.3s ease;
+        }
+        .navbar .nav-link:hover {
+            color: #FF3131 !important;
+        }
+        .navbar .nav-link.active {
+            color: #FF3131 !important;
+            font-weight: bold;
+        }
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 1px;
+            color: #FF3131 !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center" href="home.html">
+                <img src="logo.png" alt="CinéMa Logo" width="50" height="50" class="me-2">
+                <span class="fw-bold">CinéMa</span>
+            </a>
+
+            <!-- Bouton mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Menu de navigation -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="home.html">
+                            <i class="fas fa-home me-2"></i>Accueil
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#films-section">
+                            <i class="fas fa-film me-2"></i>Films
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="user-seance.html">
+                            <i class="fas fa-ticket-alt me-2"></i>Séances
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="user-reservation.html">
+                            <i class="fas fa-calendar-check me-2"></i>Réservations
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Boutons d'action -->
+                <div class="ms-lg-3">
+                    <a href="#" class="btn btn-outline-light me-2">
+                        <i class="fas fa-user me-2"></i>Connexion
+                    </a>
+                    <a href="user-reservation.html" class="btn btn-primary">
+                        <i class="fas fa-ticket-alt me-2"></i>Réserver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero-section">
+        <video autoplay muted loop class="hero-video">
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            Votre navigateur ne supporte pas la vidéo.
+        </video>
+        <div class="container hero-content">
+            <h1 class="display-4">Bienvenue au CinéMa</h1>
+            <p class="lead">Découvrez les derniers films et réservez vos séances</p>
+            <a href="user-seance.html" class="btn btn-primary btn-lg mt-3">
+                Réserver Maintenant
+            </a>
+        </div>
+    </div>
+
+    <div class="films-section" id="films-section">
+        <div class="container">
+            <h2 class="section-title">Films à l'Affiche</h2>
+            <div class="film-grid" id="films-en-salle"></div>
+
+            <h2 class="section-title mt-5">Prochainement</h2>
+            <div class="film-grid" id="films-prochainement"></div>
+        </div>
+    </div>
+
+    <footer class="text-white text-center py-4">
+        <div class="container">
+            <p class="mb-0">&copy; 2024 CinéMa. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function loadFilmsFromLocalStorage() {
+            const storedFilms = localStorage.getItem('films');
+            return storedFilms ? JSON.parse(storedFilms) : [];
+        }
+
+        function creerCarteFilm(film) {
+            const filmCard = document.createElement('div');
+            filmCard.classList.add('film-card', 'card');
+            
+            const img = document.createElement('img');
+            img.src = film.posterUrl;
+            img.alt = film.titre;
+            img.classList.add('card-img-top');
+            
+            const cardBody = document.createElement('div');
+            cardBody.classList.add('card-body');
+            
+            const titre = document.createElement('h5');
+            titre.classList.add('card-title');
+            titre.textContent = film.titre;
+            
+            const detailsBtn = document.createElement('a');
+            detailsBtn.href = `user-film-details.html?id=${film.id}`;
+            detailsBtn.classList.add('btn', 'btn-primary', 'btn-sm', 'mt-2');
+            detailsBtn.textContent = 'Détails';
+            
+            cardBody.appendChild(titre);
+            cardBody.appendChild(detailsBtn);
+            
+            filmCard.appendChild(img);
+            filmCard.appendChild(cardBody);
+            
+            return filmCard;
+        }
+
+        function afficherFilms() {
+            const films = loadFilmsFromLocalStorage();
+            const enSalleContainer = document.getElementById('films-en-salle');
+            const prochainementContainer = document.getElementById('films-prochainement');
+            
+            enSalleContainer.innerHTML = '';
+            prochainementContainer.innerHTML = '';
+
+            const filmsEnSalle = films.filter(film => film.statut === 'en_salle');
+            const filmsProchainement = films.filter(film => film.statut === 'prochainement');
+
+            filmsEnSalle.forEach(film => {
+                enSalleContainer.appendChild(creerCarteFilm(film));
+            });
+
+            filmsProchainement.forEach(film => {
+                prochainementContainer.appendChild(creerCarteFilm(film));
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', afficherFilms);
+    </script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+:root {
+    --primary-red: #FF3131;
+    --secondary-red: #8B0000;
+    --dark-background: #FFFFFF;
+    --light-background: #F0F0F0;
+    --text-color: #000000;
+    --white: #000000;
+    --black: #FFFFFF;
+    --accent-color: #FF4500;
+    --sidebar-background: #F0F0F0;
+    --hover-color: #8B0000;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--dark-background);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* Boutons */
+.btn-primary {
+    background-color: var(--primary-red);
+    border-color: var(--primary-red);
+    color: var(--dark-background);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-red);
+    border-color: var(--secondary-red);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Cartes */
+.card {
+    background-color: var(--light-background);
+    color: var(--text-color);
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* Titres de section */
+.section-title {
+    color: var(--primary-red);
+    position: relative;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background-color: var(--primary-red);
+}
+
+/* Badges */
+.badge-primary {
+    background-color: var(--primary-red);
+    color: var(--dark-background);
+}
+
+/* Modaux */
+.modal-header {
+    background-color: var(--light-background);
+    color: var(--text-color);
+}
+
+.modal-header .close {
+    color: var(--text-color);
+}
+
+/* Barre de progression */
+.progress {
+    height: 5px;
+    background-color: rgba(0,0,0,0.1);
+}
+
+.progress-bar {
+    background-color: var(--primary-red);
+}
+
+/* Effets de survol */
+a, .btn {
+    transition: all 0.3s ease;
+}
+
+a:hover, .btn:hover {
+    text-decoration: none;
+    opacity: 0.9;
+}
+
+/* Formulaires */
+.form-control {
+    background-color: var(--light-background);
+    border-color: var(--primary-red);
+    color: var(--text-color);
+}
+
+.form-control:focus {
+    background-color: var(--light-background);
+    border-color: var(--primary-red);
+    box-shadow: 0 0 0 0.2rem rgba(255, 49, 49, 0.25);
+    color: var(--text-color);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Liens */
+a {
+    color: var(--primary-red);
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--secondary-red);
+}
+
+/* Éléments de navigation */
+.nav-link {
+    color: var(--text-color) !important;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--primary-red) !important;
+}
+
+.nav-link.active {
+    color: var(--primary-red) !important;
+    font-weight: bold;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--light-background) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    color: var(--primary-red) !important;
+}
+
+.navbar-toggler {
+    color: var(--text-color);
+    border-color: var(--text-color);
+}
